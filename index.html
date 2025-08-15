@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abu Bakkar Siddique Emon - IoT & Robotics Engineer</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="title" content="Abu Bakkar Siddique Emon - IoT & Robotics Engineer" />
+    <meta name="description"
+        content="Passionate IoT, Robotics, and Aerospace Engineer with experience in AI, embedded systems, drone development, and computer vision." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Abu Bakkar Siddique Emon - IoT & Robotics Engineer" />
+    <meta property="og:description"
+        content="IoT & Robotics Engineer specializing in drone development, AI integration, and embedded systems." />
+    <meta property="og:image" content="https://cdn.pixabay.com/photo/2025/03/25/07/23/emon-9491980_1280.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Abu Bakkar Siddique Emon - IoT & Robotics Engineer" />
+    <meta property="twitter:description"
+        content="IoT & Robotics Engineer specializing in drone development, AI integration, and embedded systems." />
+    <meta property="twitter:image" content="https://cdn.pixabay.com/photo/2025/03/25/07/23/emon-9491980_1280.png" />
+    <meta name="keywords"
+        content="emon, abu bakkar siddique emon, iot engineer, robotics engineer, drone developer, ai integration, embedded systems, python developer">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://cdn.pixabay.com/photo/2025/03/25/07/23/emon-9491980_1280.png">
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary-black: #0a0a0a;
+            --secondary-black: #1a1a1a;
+            --primary-blue: #00a8ff;
+            --primary-cyan: #00f5d4;
+            --primary-green: #00ff9d;
+            --text-white: #ffffff;
+            --text-gray: #b3b3b3;
+            --neon-glow: 0 0 10px rgba(0, 168, 255, 0.7);
+        }
+
+        /* Terminal-like scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: var(--primary-black);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 4px;
+        }
+
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--primary-black);
+            color: var(--text-white);
+            font-family: 'Consolas', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Matrix Rain Effect */
+        #matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        /* Terminal-like container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Glowing text effect */
+        .glow-text {
+            text-shadow: var(--neon-glow);
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0% {
+                text-shadow: 0 0 5px var(--primary-blue);
+            }
+
+            50% {
+                text-shadow: 0 0 20px var(--primary-blue);
+            }
+
+            100% {
+                text-shadow: 0 0 5px var(--primary-blue);
+            }
+        }
+
+        /* Typing animation */
+        .typing-animation {
+            border-right: 2px solid var(--primary-blue);
+            white-space: nowrap;
+            overflow: hidden;
+            animation: typing 3.5s steps(40, end), blink-caret .75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from {
+                width: 0
+            }
+
+            to {
+                width: 100%
+            }
+        }
+
+        @keyframes blink-caret {
+
+            from,
+            to {
+                border-color: transparent
+            }
+
+            50% {
+                border-color: var(--primary-blue)
+            }
+        }
+
+        /* Card hover effects */
+        .hover-card {
+            background: var(--secondary-black);
+            border: 1px solid var(--primary-blue);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hover-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(0, 168, 255, 0.2),
+                    transparent);
+            transition: 0.5s;
+        }
+
+        .hover-card:hover::before {
+            left: 100%;
+        }
+
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 168, 255, 0.2);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg,
+                    var(--primary-black) 0%,
+                    var(--secondary-black) 100%);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        /* Code line background effect */
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent 0,
+                    transparent 40px,
+                    rgba(0, 168, 255, 0.1) 40px,
+                    rgba(0, 168, 255, 0.1) 41px);
+            pointer-events: none;
+        }
+
+        /* Profile Image Styles */
+        .profile-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 2rem auto;
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 3px solid var(--primary-blue);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glowing border effect */
+        .profile-container::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg,
+                    var(--primary-blue),
+                    var(--primary-cyan),
+                    var(--primary-green));
+            border-radius: 18px;
+            z-index: 0;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0% {
+                filter: blur(5px);
+            }
+
+            50% {
+                filter: blur(10px);
+            }
+
+            100% {
+                filter: blur(5px);
+            }
+        }
+
+        /* Section Headers */
+        .section-header {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin: 2rem 0;
+            padding-left: 1rem;
+            border-left: 4px solid var(--primary-blue);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-header::after {
+            content: '</>';
+            /* Code brackets */
+            position: absolute;
+            right: 0;
+            color: rgba(0, 168, 255, 0.2);
+            font-size: 1.5rem;
+        }
+
+        /* Skill Tags */
+        .skill-tag {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            background: rgba(0, 168, 255, 0.1);
+            border: 1px solid var(--primary-blue);
+            border-radius: 20px;
+            color: var(--primary-blue);
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background: var(--primary-blue);
+            color: var(--primary-black);
+            transform: translateY(-2px);
+        }
+
+        /* Timeline Style */
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: var(--primary-blue);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0;
+            width: 1rem;
+            height: 1rem;
+            background: var(--primary-blue);
+            border-radius: 50%;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .social-link {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .social-link:hover {
+            color: var(--primary-cyan);
+            transform: translateY(-3px);
+        }
+
+        .social-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-blue);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .social-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* Custom Buttons */
+        .custom-btn {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            font-family: 'Consolas', monospace;
+            font-size: 1rem;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .custom-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: var(--primary-blue);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            transition: width 0.6s, height 0.6s;
+            z-index: -1;
+        }
+
+        .custom-btn:hover {
+            color: var(--primary-black);
+        }
+
+        .custom-btn:hover::before {
+            width: 300%;
+            height: 300%;
+        }
+
+        /* Code Block Style */
+        .code-block {
+            background: var(--secondary-black);
+            padding: 1rem;
+            border-radius: 5px;
+            border-left: 4px solid var(--primary-blue);
+            font-family: 'Consolas', monospace;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .code-block::before {
+            content: '// Code';
+            position: absolute;
+            top: -0.8rem;
+            left: 1rem;
+            background: var(--secondary-black);
+            padding: 0 0.5rem;
+            color: var(--primary-blue);
+            font-size: 0.8rem;
+        }
+        
+        /* Contact Info */
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Project Grid */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .project-card {
+            background: var(--secondary-black);
+            border: 1px solid var(--primary-blue);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 168, 255, 0.2);
+        }
+        
+        .project-card h4 {
+            color: var(--primary-cyan);
+            margin-bottom: 0.5rem;
+        }
+        
+        .project-card .tech {
+            font-size: 0.9rem;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+        }
+        
+        .project-card ul {
+            padding-left: 1.5rem;
+        }
+        
+        .project-card li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .profile-container {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .section-header {
+                font-size: 1.5rem;
+            }
+            
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+            
+            .hero-section h2 {
+                font-size: 1.2rem;
+            }
+            
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+/* Project link styles */
+.project-link {
+    color: var(--primary-cyan);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.project-link:hover {
+    color: var(--primary-green);
+    text-shadow: 0 0 10px rgba(0, 245, 212, 0.7);
+}
+
+.project-link i {
+    font-size: 0.8em;
+}
+
+.project-link .fa-youtube {
+    color: #ff0000;
+}
+
+
+                                        
+
+    </style>
+    <style>
+        /* Custom Cursor Styles */
+        .cursor-play,
+        .cursor-pause,
+        .cursor-playing {
+            cursor: none !important;
+        }
+
+        #custom-cursor {
+            width: 30px;
+            height: 30px;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #custom-cursor svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Floating TTS Control Button */
+        #tts-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 168, 255, 0.5);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        #tts-control:hover {
+            transform: scale(1.1);
+        }
+
+        #tts-control svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        /* TTS Status Indicator */
+        #tts-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        #tts-status.visible {
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Animated Wave for Playing Status */
+        .wave {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 15px;
+        }
+
+        .wave-bar {
+            width: 2px;
+            height: 100%;
+            background: var(--primary-blue);
+            animation: wave 1s ease infinite;
+            border-radius: 2px;
+        }
+
+        .wave-bar:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .wave-bar:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .wave-bar:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes wave {
+
+            0%,
+            100% {
+                height: 15px;
+            }
+
+            50% {
+                height: 5px;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="custom-cursor">
+        <svg class="play-icon" viewBox="0 0 24 24" fill="white">
+            <path d="M8 5v14l11-7z" />
+        </svg>
+    </div>
+
+    <div id="tts-status">
+        <div class="wave">
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+            <div class="wave-bar"></div>
+        </div>
+        <span>Reading text...</span>
+    </div>
+
+    <button id="tts-control">
+        <svg class="pause-icon" viewBox="0 0 24 24" fill="white">
+            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+        </svg>
+    </button>
+    <!-- Matrix Rain Effect -->
+    <canvas id="matrix-bg"></canvas>
+
+    <div class="hero-section">
+        <div class="container">
+            <div class="content">
+                <h1 class="glow-text typing-animation">Abu Bakkar Siddique Emon</h1>
+                <h2 class="glow-text typing-animation">⚡ IoT & Robotics Engineer | 🚁 Drone Developer | 🤖 AI Integration</h2>
+                <p>Gazipur, Bangladesh</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>+8801518979969</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <a href="mailto:abubakkar0001@std.bdu.ac.bd" style="color: var(--primary-blue);text-decoration: none;">abubakkar0001@std.bdu.ac.bd</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-globe"></i>
+                        <a href="https://abs-emon.blogspot.com/" target="_blank" style="color: var(--primary-blue);text-decoration: none;">abs-emon.blogspot.com</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fab fa-github"></i>
+                        <a href="https://github.com/ABS-EMON" target="_blank" style="color: var(--primary-blue);text-decoration: none;">github.com/ABS-EMON</a>
+                    </div>
+                </div>
+                <div class="profile-container">
+                    <img src="https://cdn.pixabay.com/photo/2025/03/25/07/23/emon-9491980_1280.png" alt="Abu Bakkar Siddique Emon"
+                        class="profile-img">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h3 class="section-header">Professional Summary</h3>
+        <p>Passionate IoT, Robotics, and Aerospace Engineer with experience in AI, embedded systems, drone development, computer vision, game development, and full-stack web and app development. Strong proficiency in Python, C++, TensorFlow, OpenCV, Laravel, Flutter, and mission-critical hardware like Pixhawk and ESP32. Proven ability to drive innovative real-world solutions.</p>
+
+        <h3 class="section-header">Core Skills</h3>
+        <div class="skills">
+            <span class="skill-tag">Python</span>
+            <span class="skill-tag">C++</span>
+            <span class="skill-tag">TensorFlow</span>
+            <span class="skill-tag">OpenCV</span>
+            <span class="skill-tag">Laravel</span>
+            <span class="skill-tag">Flutter</span>
+            <span class="skill-tag">Unity</span>
+            <span class="skill-tag">C#</span>
+            <span class="skill-tag">PHP</span>
+            <span class="skill-tag">MySQL</span>
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">Pixhawk</span>
+            <span class="skill-tag">ESP32</span>
+            <span class="skill-tag">Mission Planner</span>
+            <span class="skill-tag">MAVLink</span>
+            <span class="skill-tag">Blender</span>
+            <span class="skill-tag">Git</span>
+            <span class="skill-tag">Arduino</span>
+            <span class="skill-tag">Firebase</span>
+            <span class="skill-tag">OpenAI API</span>
+            <span class="skill-tag">Flight Physics</span>
+        </div>
+
+        <h3 class="section-header">Education</h3>
+        <div class="timeline">
+            <div class="timeline-item hover-card">
+                <h4>Gazipur Digital University, Bangladesh</h4>
+                <p><b>B.Sc. in IoT and Robotics Engineering</b><br>Aug 2023 - May 2027 (Expected)</p>
+            </div>
+            <div class="timeline-item hover-card">
+                <h4>Nasirabad College, Mymensingh</h4>
+                <p><b>H.S.C. (Science), GPA 5.00</b><br>Aug 2020 - Feb 2022</p>
+            </div>
+            <div class="timeline-item hover-card">
+                <h4>Monsurpur A.H.T High School, Netrokona</h4>
+                <p><b>S.S.C. (Science), GPA 5.00</b><br>Jan 2018 - Feb 2020</p>
+            </div>
+        </div>
+
+        <h3 class="section-header">Professional Experience</h3>
+        <div class="timeline">
+            <div class="timeline-item hover-card">
+                <h4>SU-27 RC Jet Development and Operator, BDU | Aug 2024 - Jun 2025</h4>
+                <ul>
+                    <li>Manually built, assembled, and tuned a lightweight RC SU-27 jet.</li>
+                    <li>Conducted test flights, integrated Pixhawk and Mission Planner for flight stabilization and telemetry.</li>
+                </ul>
+            </div>
+            
+            <div class="timeline-item hover-card">
+                <h4>Quadcopter Development & Operator, BDU | Aug 2024 - Jun 2025</h4>
+                <ul>
+                    <li>Designed and built a GPS-enabled quadcopter from scratch with responsive flight control.</li>
+                    <li>Integrated sensors, ESCs, and brushless motors for stable and precise flight operation.</li>
+                </ul>
+            </div>
+            
+            <div class="timeline-item hover-card">
+                <h4>Unity & VR Game Development, BDU / TGG Organization | Apr 2025 - May 2025</h4>
+                <ul>
+                    <li>Developed and published a 3D Car Racing Game, 2D Role-based Access Game, and XR Drone Simulator using Unity and C#.</li>
+                    <li>Built immersive simulations demonstrating game physics, OOP principles, and interactive XR training.</li>
+                    <li>Released WebGL games and published the XR drone simulator on Itch.io.</li>
+                </ul>
+            </div>
+            
+            <div class="timeline-item hover-card">
+                <h4>Laravel & AI ChatBot Development (Japanese AI Course), TGG Organization | Jan 2025 - May 2025</h4>
+                <ul>
+                    <li>Developed Laravel-based projects including Blog Web App, To-Do List, and AI-powered Chatbot with OpenAI API integration.</li>
+                    <li>Managed backend databases (MySQL) using HeidiSQL, TablePlus, and DB Engine; tested APIs with Postman.</li>
+                </ul>
+            </div>
+            
+            <div class="timeline-item hover-card">
+                <h4>Python Package Developer, BDU</h4>
+                <ul>
+                    <li>Published a Python package named emon on PyPI.</li>
+                </ul>
+            </div>
+            
+            <div class="timeline-item hover-card">
+                <h4>Android App Developer, Amazon Appstore</h4>
+                <ul>
+                    <li>Published Online Tools, Calculator, and Namata apps.</li>
+                    <li>Integrated AdMob for monetization.</li>
+                </ul>
+            </div>
+            
+            <div class="timeline-item hover-card">
+                <h4>Web Developer, BDU Robotics Club</h4>
+                <ul>
+                    <li>Designed and deployed secure, performance-optimized websites.</li>
+                </ul>
+            </div>
+        </div>
+
+
+
+       <h3 class="section-header">Projects</h3>
+<div class="project-grid">
+    <div class="project-card">
+        <h4>
+            <a href="https://github.com/ABS-EMON/RC_Plane" target="_blank" class="project-link">
+                RC Aircraft - SU-27 Jet
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        </h4>
+        <div class="tech">Pixhawk, Mission Planner | May 2025 - Present</div>
+        <ul>
+            <li>Manually built, tuned, and tested a lightweight RC aircraft.</li>
+        </ul>
+    </div>
+    
+    <div class="project-card">
+        <h4>
+            <a href="https://github.com/ABS-EMON/RC_Plane" target="_blank" class="project-link">
+                RC Plane GPS Telemetry System
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        </h4>
+        <div class="tech">Pixhawk, Mission Planner, MAVLink | Jun 2025 - Present</div>
+        <ul>
+            <li>Integrated real-time GPS telemetry with RC aircraft for remote monitoring.</li>
+            <li>Visualized flight data via telemetry modules and analyzed performance.</li>
+        </ul>
+    </div>
+    
+    <div class="project-card">
+        <h4>
+            <a href="https://youtu.be/Q-iiSwG6rbU?si=wlbNslsYrfRrGznS" target="_blank" class="project-link">
+                Drone Simulator Project
+                <i class="fas fab fa-youtube"></i>
+            </a>
+        </h4>
+        <div class="tech">Unity, C#, Flight Physics | May 2025 - Present</div>
+        <ul>
+            <li>Developed an immersive XR drone simulator for training, published on Itch.io.</li>
+            <li>Designed a flight simulator replicating real-world quadcopter dynamics.</li>
+            <li>Implemented PID-tuned flight control and mission simulation environments.</li>
+        </ul>
+    </div>
+    
+    <div class="project-card">
+        <h4>
+            <a href="https://github.com/ABS-EMON/ChatBot" target="_blank" class="project-link">
+                AI-Powered Chatbot Web App
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        </h4>
+        <div class="tech">Laravel, PHP, MySQL, Tailwind CSS, OpenAI API | Mar 2025 - May 2025</div>
+        <ul>
+            <li>Integrated AI-powered chatbot with voice-to-text, text-to-voice, and AI image generation.</li>
+            <li>Managed backend databases using HeidiSQL, TablePlus, and DB Engine; tested APIs via Postman.</li>
+        </ul>
+    </div>
+    
+    <div class="project-card">
+        <h4>
+            <a href="https://github.com/ABS-EMON/livewaire" target="_blank" class="project-link">
+                Laravel To-Do List Web App
+                <i class="fas fa-external-link-alt"></i>
+            </a>
+        </h4>
+        <div class="tech">Laravel, PHP, MySQL, Tailwind CSS | Feb 2025 - Apr 2025</div>
+        <ul>
+            <li>Created a task management app with CRUD operations and responsive UI using Tailwind CSS.</li>
+        </ul>
+    </div>
+    
+    <div class="project-card">
+        <h4>
+            <a href="https://github.com/ABS-EMON/IoT-Based-Health_Monitoring-System" target="_blank" class="project-link">
+                IoT Health Monitoring System
+                <i class="fab fa-external-link-alt"></i>
+            </a>
+        </h4>
+        <div class="tech">ESP32, Firebase, IoT Dashboard</div>
+        <ul>
+            <li>Built an ESP32-based system to monitor heart rate and temperature remotely.</li>
+            <li>Visualized real-time data in Firebase dashboard and triggered alerts.</li>
+        </ul>
+    </div>
+</div>
+
+
+
+
+        <h3 class="section-header">Awards and Scholarships</h3>
+        <div class="skills">
+            <span class="skill-tag">Shaheed Syed Nazrul Islam Scholarship for HSC (2023)</span>
+            <span class="skill-tag">15th National Undergraduate Math Olympiad Finalist (2024)</span>
+        </div>
+
+        <h3 class="section-header">Certifications</h3>
+        <div class="skills">
+            <span class="skill-tag">Python Basics</span>
+            <span class="skill-tag">NASA Space App Challenge</span>
+            <span class="skill-tag">Robotics Course</span>
+            <span class="skill-tag">Machine Learning</span>
+            <span class="skill-tag">AWS ML</span>
+            <span class="skill-tag">Soft Skills</span>
+            <span class="skill-tag">VS Code Udemy Certificate</span>
+            <span class="skill-tag">Hackerrank Problem Solving</span>
+            <span class="skill-tag">ML Specialty</span>
+            <span class="skill-tag">AI Concepts Microsoft</span>
+            <span class="skill-tag">Excel for Workplace</span>
+            <span class="skill-tag">WordPress Theme UYLab</span>
+            <span class="skill-tag">Math Olympiad Participation</span>
+            <span class="skill-tag">Math Olympiad Achievement</span>
+        </div>
+
+        <h3 class="section-header">References</h3>
+        <div class="project-grid">
+            <div class="project-card">
+                <h4>Suman Saha</h4>
+                <p>Chair, Dept. of IRE<br>Gazipur Digital University</p>
+                <p>suman0001@bdu.ac.bd</p>
+            </div>
+            
+         
+            
+            <div class="project-card">
+                <h4>Saurav Chandra Das</h4>
+                <p>Lecturer, IRE<br>Gazipur Digital University</p>
+                <p>saurav0001@bdu.ac.bd</p>
+            </div>
+            
+            <div class="project-card">
+                <h4>Abu Sayed</h4>
+                <p>Full-Stack Web Developer, Software Engineer & AI Integration Specialist</p>
+                <p>hi@abusayed.com.bd<br>+8801925785462<br><a href="https://abusayed.com.bd/" target="_blank" style="color: var(--primary-blue);">abusayed.com.bd</a></p>
+            </div>
+        </div>
+
+        <div class="social-links">
+            <a href="https://github.com/ABS-EMON" target="_blank" class="social-link"><i
+                    class="fab fa-github"></i></a>
+            <a href="https://abs-emon.blogspot.com/" target="_blank" class="social-link"><i
+                    class="fab fa-blogger"></i></a>
+            <a href="mailto:abubakkar0001@std.bdu.ac.bd" target="_blank" class="social-link"><i
+                    class="fas fa-envelope"></i></a>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrix-bg');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const columns = Math.floor(width / 20);
+        const drops = new Array(columns).fill(0);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = '#00a8ff';
+            ctx.font = '15px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = String.fromCharCode(Math.random() * 128);
+                ctx.fillText(text, i * 20, drops[i] * 20);
+
+                if (drops[i] * 20 > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 50);
+
+        // Typing Animation
+        function typeWriter(element, text, speed = 50) {
+            let i = 0;
+            element.innerHTML = '';
+
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+
+            type();
+        }
+
+        // Initialize typing animations
+        document.addEventListener('DOMContentLoaded', function () {
+            const titles = document.querySelectorAll('.typing-animation');
+            titles.forEach(title => {
+                const text = title.textContent;
+                typeWriter(title, text);
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.hover-card, .project-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Text-to-Speech on click
+        document.body.addEventListener('click', function (event) {
+            if (event.target.matches('.social-link, .skill-tag, li, h4, p, a')) {
+                const text = event.target.innerText || event.target.textContent;
+                const utterance = new SpeechSynthesisUtterance(text + '.');
+                speechSynthesis.speak(utterance);
+            }
+        });
+    </script>
+
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "Person",
+        "name": "Abu Bakkar Siddique Emon",
+        "jobTitle": "IoT & Robotics Engineer",
+        "image": "https://cdn.pixabay.com/photo/2025/03/25/07/23/emon-9491980_1280.png",
+        "url": "https://abs-emon.blogspot.com/",
+        "sameAs": [
+            "https://github.com/ABS-EMON",
+            "https://abs-emon.blogspot.com/"
+        ],
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Gazipur",
+            "addressCountry": "Bangladesh"
+        },
+        "email": "abubakkar0001@std.bdu.ac.bd",
+        "telephone": "+8801518979969"
+    }
+    </script>
+
+    <script>
+        // Custom Cursor Logic
+        const cursor = document.getElementById('custom-cursor');
+        const ttsStatus = document.getElementById('tts-status');
+        const ttsControl = document.getElementById('tts-control');
+        let isPlaying = false;
+        let currentUtterance = null;
+
+        // Update cursor position
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.transform = `translate(${e.clientX - 15}px, ${e.clientY - 15}px)`;
+        });
+
+        // Show/hide cursor based on hoverable elements
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.matches('.social-link, .skill-tag, li, h4, p, a')) {
+                cursor.style.opacity = '1';
+                if (isPlaying) {
+                    showPlayingCursor();
+                } else {
+                    showPlayCursor();
+                }
+            } else {
+                cursor.style.opacity = '0';
+            }
+        });
+
+        // Update cursor icons
+        function showPlayCursor() {
+            cursor.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="white">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            `;
+        }
+
+        function showPlayingCursor() {
+            cursor.innerHTML = `
+                <div class="wave">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+            `;
+        }
+
+        function showPauseCursor() {
+            cursor.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="white">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+            `;
+        }
+
+        // TTS Logic
+        function startTTS(text) {
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+            }
+
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            currentUtterance.onstart = () => {
+                isPlaying = true;
+                ttsStatus.classList.add('visible');
+                showPlayingCursor();
+                updateTTSControl();
+            };
+
+            currentUtterance.onend = () => {
+                isPlaying = false;
+                ttsStatus.classList.remove('visible');
+                showPlayCursor();
+                updateTTSControl();
+            };
+
+            speechSynthesis.speak(currentUtterance);
+        }
+
+        function stopTTS() {
+            if (currentUtterance) {
+                speechSynthesis.cancel();
+                isPlaying = false;
+                ttsStatus.classList.remove('visible');
+                showPlayCursor();
+                updateTTSControl();
+            }
+        }
+
+        // Update TTS control button
+        function updateTTSControl() {
+            ttsControl.innerHTML = isPlaying ? `
+                <svg viewBox="0 0 24 24" fill="white">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                </svg>
+            ` : `
+                <svg viewBox="0 0 24 24" fill="white">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            `;
+        }
+
+        // Click handlers
+        document.body.addEventListener('click', function (event) {
+            if (event.target.matches('.social-link, .skill-tag, li, h4, p, a')) {
+                const text = event.target.innerText || event.target.textContent;
+                startTTS(text);
+            }
+        });
+
+        // Keyboard handler
+        document.addEventListener('keydown', function (event) {
+            if (isPlaying) {
+                stopTTS();
+            }
+        });
+
+        // TTS Control button handler
+        ttsControl.addEventListener('click', function () {
+            if (isPlaying) {
+                stopTTS();
+            }
+        });
+
+        // Hide cursor when leaving window
+        document.addEventListener('mouseout', function (event) {
+            if (!event.relatedTarget) {
+                cursor.style.opacity = '0';
+            }
+        });
+
+        // Initialize TTS control button
+        updateTTSControl();
+    </script>
+</body>
+             
+</html>
