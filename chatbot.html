@@ -356,6 +356,70 @@
             background-color: #1f1f1f;
             border-color: #444;
         }
+
+        /* Responsive sidebar styles */
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                z-index: 50;
+                transition: left 0.3s ease;
+            }
+            
+            #sidebar.show {
+                left: 0;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            }
+            
+            #sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 40;
+            }
+            
+            #sidebar-overlay.show {
+                display: block;
+            }
+            
+            #menu-button {
+                display: flex;
+            }
+            
+            .chat-container {
+                padding: 1rem;
+            }
+            
+            .message-bubble {
+                max-width: 85%;
+            }
+        }
+        
+        #menu-button {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 30;
+            background: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark #menu-button {
+            background: #1f1f1f;
+            color: white;
+        }
     </style>
 </head>
 <body class="font-[Inter] text-gray-900 tint-0 min-h-screen flex items-center justify-center flex-col text-center px-6">
@@ -401,9 +465,17 @@
 
     <!-- Chat Container -->
     <div id="chat-container" class="hidden w-full h-full">
+        <!-- Mobile menu button -->
+        <button id="menu-button" class="md:hidden">
+            <i class="ri-menu-line"></i>
+        </button>
+        
+        <!-- Sidebar overlay for mobile -->
+        <div id="sidebar-overlay"></div>
+        
         <div class="flex h-screen">
             <!-- Left Sidebar -->
-            <aside id="sidebar" class="w-[280px] h-full flex flex-col justify-between border-r border-gray-200 bg-white transition-all duration-300 ease-in-out">
+            <aside id="sidebar" class="w-[280px] h-full flex flex-col justify-between border-r border-gray-200 bg-white transition-all duration-300 ease-in-out md:relative md:left-0">
                 <!-- Sidebar Header -->
                 <div class="h-16 px-4 py-3 flex items-center justify-between border-b border-gray-200">
                     <div class="flex items-center">
@@ -547,7 +619,8 @@
             "who is your creator": "I was created by ABS EMON.",
             "what can you do": "I can assist you with basic queries and provide helpful information.",
             "hello": "Hello! How can I help you today?",
-            "GDU full form": "Gazakur Digital University"
+            "GDU full form": "Gazakur Digital University",
+           
         };
 
         // DOM elements
@@ -566,6 +639,9 @@
         const sidebar = document.getElementById('sidebar');
         const voiceButton = document.getElementById('voice-button');
         const apiKeyInput = document.getElementById('api-key');
+        const collapseSidebarButton = document.getElementById('collapse-sidebar');
+        const menuButton = document.getElementById('menu-button');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
 
         // Chat state
         const chats = {};
@@ -649,7 +725,60 @@
             
             // Check login status
             checkLoginStatus();
+            
+            // Setup responsive sidebar
+            setupResponsiveSidebar();
         });
+
+        // Setup responsive sidebar functionality
+        function setupResponsiveSidebar() {
+            // Check if we're on mobile
+            function isMobile() {
+                return window.innerWidth <= 768;
+            }
+            
+            // Toggle sidebar visibility
+            function toggleSidebar() {
+                sidebar.classList.toggle('show');
+                sidebarOverlay.classList.toggle('show');
+            }
+            
+            // Show sidebar
+            function showSidebar() {
+                sidebar.classList.add('show');
+                sidebarOverlay.classList.add('show');
+            }
+            
+            // Hide sidebar
+            function hideSidebar() {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            }
+            
+            // Event listeners for sidebar
+            menuButton.addEventListener('click', showSidebar);
+            collapseSidebarButton.addEventListener('click', hideSidebar);
+            sidebarOverlay.addEventListener('click', hideSidebar);
+            
+            // Auto-hide sidebar when switching to desktop
+            function handleResize() {
+                if (!isMobile()) {
+                    hideSidebar();
+                    menuButton.style.display = 'none';
+                } else {
+                    menuButton.style.display = 'flex';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Initially hide menu button on desktop
+            if (!isMobile()) {
+                menuButton.style.display = 'none';
+            } else {
+                menuButton.style.display = 'flex';
+            }
+        }
 
         // Chat functionality
         function startNewChat() {
@@ -681,6 +810,12 @@
             
             // Hide chat title until user types
             document.getElementById('chat-title-bar').classList.add('hidden');
+            
+            // Hide sidebar on mobile after selecting a chat
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            }
             
             return chatId;
         }
@@ -1068,6 +1203,12 @@
             
             messageInput.textContent = '';
             toggleSendButton();
+            
+            // Hide sidebar on mobile after selecting a chat
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            }
         }
 
         function renderMessages(messages) {
@@ -1234,4 +1375,3 @@
     </script>
 </body>
 </html>
-
