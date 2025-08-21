@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthMonitor IoT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #009688;
+            --primary-dark: #00796b;
+            --secondary: #03A9F4;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --dark: #263238;
+            --light: #f5f5f5;
+            --gray: #9E9E9E;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f7fa, #f1f8e9);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            height: 90vh;
+        }
+
+        /* Login Screen */
+        #loginScreen {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            background: linear-gradient(to bottom right, #e0f2f1, #b2dfdb);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-circle {
+            width: 90px;
+            height: 90px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 4px 15px rgba(0, 150, 136, 0.3);
+        }
+
+        .logo-circle i {
+            color: white;
+            font-size: 40px;
+        }
+
+        .logo-text h1 {
+            font-size: 28px;
+            color: var(--dark);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            width: 100%;
+            box-shadow: var(--card-shadow);
+        }
+
+        .login-card h2 {
+            text-align: center;
+            color: var(--dark);
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--dark);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 150, 136, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 150, 136, 0.5);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .signup-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Main App */
+        #mainApp {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            display: none;
+        }
+
+        /* Drawer Styles */
+        #drawerOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 98;
+            display: none;
+        }
+
+        #drawer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 99;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            background: var(--primary);
+            padding: 25px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .drawer-logo {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .drawer-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .drawer-menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .drawer-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: var(--dark);
+            text-decoration: none;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .drawer-item.active {
+            background: rgba(0, 150, 136, 0.1);
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+
+        .drawer-item i {
+            width: 24px;
+            text-align: center;
+            margin-right: 15px;
+            font-size: 18px;
+        }
+
+        .drawer-badge {
+            position: absolute;
+            right: 20px;
+            background: var(--danger);
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            padding: 2px 8px;
+        }
+
+        .drawer-footer {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .drawer-footer-btn {
+            background: rgba(0, 150, 136, 0.1);
+            color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Header */
+        .app-header {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            z-index: 10;
+        }
+
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: var(--dark);
+            cursor: pointer;
+            margin-right: 15px;
+            z-index: 100;
+        }
+
+        .patient-select {
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+        }
+
+        .section-title h2 {
+            font-size: 22px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .section-title p {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .live-indicator .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .metric-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-normal {
+            background: var(--success);
+        }
+
+        .status-warning {
+            background: var(--warning);
+        }
+
+        .status-danger {
+            background: var(--danger);
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .metric-unit {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 3px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .hr-icon { background: rgba(244, 67, 54, 0.15); color: var(--danger); }
+        .spo2-icon { background: rgba(33, 150, 243, 0.15); color: var(--secondary); }
+        .humidity-icon { background: rgba(0, 150, 136, 0.15); color: var(--primary); }
+        .temp-icon { background: rgba(255, 152, 0, 0.15); color: var(--warning); }
+
+        /* Chart Card */
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-header h3 {
+            font-size: 18px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .chart-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chart-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .chart-btn:not(.active) {
+            background: #f5f5f5;
+            color: var(--gray);
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+
+        /* Navigation */
+        .app-nav {
+            display: flex;
+            background: white;
+            border-top: 1px solid #eeeeee;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 0;
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .nav-item span {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .nav-item .notification-badge {
+            position: absolute;
+            top: 5px;
+            right: 25%;
+            background: var(--danger);
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Profile Screen */
+        #profileScreen {
+            display: none;
+        }
+
+        .profile-header {
+            text-align: center;
+            padding: 30px 0 20px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            color: white;
+            font-size: 40px;
+        }
+
+        .profile-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .profile-title {
+            font-size: 15px;
+            color: var(--gray);
+        }
+
+        .profile-menu {
+            padding: 0 20px;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 0;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .menu-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .menu-text {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .menu-right {
+            color: #bdbdbd;
+            font-size: 20px;
+        }
+
+        .sign-out-btn {
+            width: 100%;
+            padding: 16px;
+            background: rgba(244, 67, 54, 0.1);
+            border: none;
+            border-radius: 12px;
+            color: var(--danger);
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sign-out-btn:hover {
+            background: rgba(244, 67, 54, 0.2);
+        }
+
+        /* Notifications Screen */
+        #notificationsScreen {
+            display: none;
+        }
+
+        .notification-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .notification-header h2 {
+            font-size: 22px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .mark-read-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .notification-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: var(--card-shadow);
+            border-left: 4px solid var(--danger);
+            position: relative;
+        }
+
+        .notification-card.warning {
+            border-left-color: var(--warning);
+        }
+
+        .notification-card.info {
+            border-left-color: var(--secondary);
+        }
+
+        .notification-card.success {
+            border-left-color: var(--success);
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .notification-icon.alert {
+            background: rgba(244, 67, 54, 0.15);
+            color: var(--danger);
+        }
+
+        .notification-icon.warning {
+            background: rgba(255, 152, 0, 0.15);
+            color: var(--warning);
+        }
+
+        .notification-icon.info {
+            background: rgba(33, 150, 243, 0.15);
+            color: var(--secondary);
+        }
+
+        .notification-icon.success {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+        }
+
+        .notification-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .notification-description {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+
+        .notification-time {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        /* Prediction Section */
+        .prediction-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        .prediction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .prediction-header h3 {
+            font-size: 18px;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .prediction-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .prediction-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .prediction-result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            background: #f5f5f5;
+            display: none;
+        }
+
+        .prediction-normal {
+            background: rgba(76, 175, 80, 0.15);
+            border-left: 4px solid var(--success);
+        }
+
+        .prediction-mild {
+            background: rgba(255, 152, 0, 0.15);
+            border-left: 4px solid var(--warning);
+        }
+
+        .prediction-severe {
+            background: rgba(244, 67, 54, 0.15);
+            border-left: 4px solid var(--danger);
+        }
+
+        .prediction-chronic {
+            background: rgba(156, 39, 176, 0.15);
+            border-left: 4px solid #9C27B0;
+        }
+
+        .prediction-result h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .prediction-result p {
+            font-size: 14px;
+            color: var(--dark);
+        }
+        
+        /* Loading state */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray);
+        }
+        
+        .loading i {
+            margin-right: 8px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Debug info */
+        .debug-info {
+            font-size: 10px;
+            color: #ccc;
+            padding: 5px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div id="loginScreen">
+            <div class="logo-container">
+                <div class="logo-circle">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>HealthMonitor</h1>
+                    <p>IoT Health Tracking System</p>
+                </div>
+            </div>
+            
+            <div class="login-card">
+                <h2>Sign In to Dashboard</h2>
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="your.email@example.com">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="••••••••">
+                </div>
+                <button class="btn btn-primary" id="loginBtn">Sign In</button>
+                
+                <div class="forgot-password">
+                    <a href="#">Forgot Password?</a>
+                </div>
+            </div>
+            
+            <div class="signup-link">
+                Don't have an account? <a href="#">Register</a>
+            </div>
+        </div>
+        
+        <!-- Drawer Overlay -->
+        <div id="drawerOverlay"></div>
+        
+        <!-- Drawer Menu -->
+        <div id="drawer">
+            <div class="drawer-header">
+                <div class="drawer-logo">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="drawer-title">
+                    <h3>HealthMonitor</h3>
+                    <p>v2.1.0</p>
+                </div>
+            </div>
+            
+            <div class="drawer-menu">
+                <a href="#" class="drawer-item active">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="drawer-item">
+                    <i class="fas fa-user-injured"></i>
+                    Patients
+                    <span class="drawer-badge">8</span>
+                </a>
+                <a href="#" class="drawer-item">
+                    <i class="fas fa-file-medical"></i>
+                    Reports
+                </a>
+                <a href="#" class="drawer-item">
+                    <i class="fas fa-bell"></i>
+                    Alerts
+                    <span class="drawer-badge">3</span>
+                </a>
+                <a href="#" class="drawer-item">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+                <a href="#" class="drawer-item">
+                    <i class="fas fa-info-circle"></i>
+                    About
+                </a>
+                <a href="#" class="drawer-item">
+                    <i class="fas fa-headset"></i>
+                    Support
+                </a>
+            </div>
+            
+            <div class="drawer-footer">
+                <button class="drawer-footer-btn">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+                <button class="drawer-footer-btn" id="drawerLogoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main App -->
+        <div id="mainApp">
+            <!-- Header -->
+            <div class="app-header">
+                <div class="header-left">
+                    <button class="menu-btn" id="menuBtn">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <select class="patient-select">
+                        <option>John Smith - Room 301</option>
+                        <option>Emma Johnson - Room 302</option>
+                        <option>Michael Brown - Room 303</option>
+                    </select>
+                </div>
+                <div class="header-right">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="app-content" id="dashboardScreen">
+                <div class="section-title">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2>Live Monitoring</h2>
+                            <p>Real-time patient vitals</p>
+                        </div>
+                        <div class="live-indicator">
+                            <div class="dot"></div>
+                            <span>LIVE</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="metrics-grid">
+                    <!-- Heart Rate -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon hr-icon">
+                                <i class="fas fa-heartbeat"></i>
+                            </div>
+                            <div class="metric-status status-normal" id="hrStatus"></div>
+                        </div>
+                        <div class="metric-value" id="heartRate">Loading...</div>
+                        <div class="metric-unit">BPM</div>
+                        <div class="metric-label">Heart Rate</div>
+                        <div class="debug-info" id="debugHeartRate"></div>
+                    </div>
+                    
+                    <!-- SpO2 -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon spo2-icon">
+                                <i class="fas fa-lungs"></i>
+                            </div>
+                            <div class="metric-status status-normal" id="spo2Status"></div>
+                        </div>
+                        <div class="metric-value" id="spo2">Loading...</div>
+                        <div class="metric-unit">%</div>
+                        <div class="metric-label">SpO₂</div>
+                        <div class="debug-info" id="debugSpo2"></div>
+                    </div>
+                    
+                    <!-- Humidity -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon humidity-icon">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div class="metric-status status-normal" id="humidityStatus"></div>
+                        </div>
+                        <div class="metric-value" id="humidity">Loading...</div>
+                        <div class="metric-unit">%</div>
+                        <div class="metric-label">Humidity</div>
+                        <div class="debug-info" id="debugHumidity"></div>
+                    </div>
+                    
+                    <!-- Temperature -->
+                    <div class="metric-card">
+                        <div class="metric-header">
+                            <div class="metric-icon temp-icon">
+                                <i class="fas fa-thermometer-half"></i>
+                            </div>
+                            <div class="metric-status status-normal" id="tempStatus"></div>
+                        </div>
+                        <div class="metric-value" id="temperature">Loading...</div>
+                        <div class="metric-unit">°C</div>
+                        <div class="metric-label">Temperature</div>
+                        <div class="debug-info" id="debugTemperature"></div>
+                    </div>
+                </div>
+                
+                <!-- Chart Card -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 id="chartTitle">24-Hour Heart Rate</h3>
+                        <div class="chart-buttons">
+                            <button class="chart-btn active" data-chart="heartRate">
+                                HR
+                            </button>
+                            <button class="chart-btn" data-chart="spo2">
+                                SpO₂
+                            </button>
+                            <button class="chart-btn" data-chart="temperature">
+                                Temp
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notifications Screen -->
+            <div id="notificationsScreen" class="app-content">
+                <div class="notification-header">
+                    <h2>Alerts & Notifications</h2>
+                    <button class="mark-read-btn" id="markReadBtn">Mark All as Read</button>
+                </div>
+                
+                <!-- Prediction Section -->
+                <div class="prediction-section">
+                    <div class="prediction-header">
+                        <h3>Health Prediction</h3>
+                        <button class="prediction-btn" id="predictBtn">
+                            <i class="fas fa-brain"></i> Predict Health Status
+                        </button>
+                    </div>
+                    <div class="prediction-result" id="predictionResult">
+                        <h4 id="predictionTitle">Prediction Result</h4>
+                        <p id="predictionText">The prediction will appear here.</p>
+                    </div>
+                </div>
+                
+                <div class="notification-list">
+                 
+                   
+                </div>
+            </div>
+            
+            <!-- Profile Screen -->
+            <div id="profileScreen" class="app-content">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h2 class="profile-name">Dr. Sarah Wilson</h2>
+                    <p class="profile-title">Cardiologist</p>
+                </div>
+                
+                <div class="profile-menu">
+                    <div class="menu-item">
+                        <div class="menu-left">
+                            <div class="menu-icon" style="background: rgba(33, 150, 243, 0.15); color: #2196F3;">
+                                <i class="fas fa-user-cog"></i>
+                            </div>
+                            <span class="menu-text">Account Settings</span>
+                        </div>
+                        <div class="menu-right">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-left">
+                            <div class="menu-icon" style="background: rgba(76, 175, 80, 0.15); color: #4CAF50;">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <span class="menu-text">Notification Settings</span>
+                        </div>
+                        <div class="menu-right">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-left">
+                            <div class="menu-icon" style="background: rgba(156, 39, 176, 0.15); color: #9C27B0;">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <span class="menu-text">Privacy & Security</span>
+                        </div>
+                        <div class="menu-right">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-item">
+                        <div class="menu-left">
+                            <div class="menu-icon" style="background: rgba(255, 152, 0, 0.15); color: #FF9800;">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <span class="menu-text">Help & Support</span>
+                        </div>
+                        <div class="menu-right">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                    
+                    <button class="sign-out-btn" id="signOutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Navigation -->
+            <div class="app-nav">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-item" data-target="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span>Alerts</span>
+                    <span class="notification-badge">0</span>
+                </a>
+                <a href="#" class="nav-item" data-target="profile">
+                    <i class="fas fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // ThingSpeak API configuration
+        const THINGSPEAK_CHANNEL_ID = '3025946';
+        const THINGSPEAK_API_KEY = 'T1QNBXPSNI15M5DM';
+        const THINGSPEAK_API_URL = `https://api.thingspeak.com/channels/${THINGSPEAK_CHANNEL_ID}/feeds.json`;
+        
+        // ML Model Server URL
+        const ML_SERVER_URL = 'http://192.168.211.209:5050/predict';
+
+        
+        // DOM Elements
+        const loginScreen = document.getElementById('loginScreen');
+        const mainApp = document.getElementById('mainApp');
+        const loginBtn = document.getElementById('loginBtn');
+        const signOutBtn = document.getElementById('signOutBtn');
+        const drawerLogoutBtn = document.getElementById('drawerLogoutBtn');
+        const navItems = document.querySelectorAll('.nav-item');
+        const dashboardScreen = document.getElementById('dashboardScreen');
+        const notificationsScreen = document.getElementById('notificationsScreen');
+        const profileScreen = document.getElementById('profileScreen');
+        const markReadBtn = document.getElementById('markReadBtn');
+        const predictBtn = document.getElementById('predictBtn');
+        const predictionResult = document.getElementById('predictionResult');
+        const predictionTitle = document.getElementById('predictionTitle');
+        const predictionText = document.getElementById('predictionText');
+        const notificationBadge = document.querySelector('.notification-badge');
+        const menuBtn = document.getElementById('menuBtn');
+        const drawerOverlay = document.getElementById('drawerOverlay');
+        const drawer = document.getElementById('drawer');
+        const chartBtns = document.querySelectorAll('.chart-btn');
+        const chartTitle = document.getElementById('chartTitle');
+        
+        // Vitals elements
+        const heartRate = document.getElementById('heartRate');
+        const spo2 = document.getElementById('spo2');
+        const humidity = document.getElementById('humidity');
+        const temperature = document.getElementById('temperature');
+        
+        // Status indicators
+        const hrStatus = document.getElementById('hrStatus');
+        const spo2Status = document.getElementById('spo2Status');
+        const humidityStatus = document.getElementById('humidityStatus');
+        const tempStatus = document.getElementById('tempStatus');
+        
+        // Chart variables
+        let currentChart = null;
+        const chartColors = {
+            heartRate: '#F44336',
+            spo2: '#2196F3',
+            temperature: '#FF9800'
+        };
+        
+        // Data storage for charts and ML prediction
+        let latestData = {
+            heartRate: [],
+            spo2: [],
+            temperature: [],
+            humidity: []
+        };
+
+        // Sample data for demonstration (if ThingSpeak fails)
+        const sampleData = {
+            heartRate: Array.from({length: 20}, (_, i) => ({ 
+                value: Math.floor(Math.random() * 40) + 60, 
+                time: new Date(Date.now() - (19 - i) * 60000).toISOString() 
+            })),
+            spo2: Array.from({length: 20}, (_, i) => ({ 
+                value: Math.floor(Math.random() * 10) + 90, 
+                time: new Date(Date.now() - (19 - i) * 60000).toISOString() 
+            })),
+            humidity: Array.from({length: 20}, (_, i) => ({ 
+                value: Math.floor(Math.random() * 40) + 30, 
+                time: new Date(Date.now() - (19 - i) * 60000).toISOString() 
+            })),
+            temperature: Array.from({length: 20}, (_, i) => ({ 
+                value: (Math.random() * 3) + 36.0, 
+                time: new Date(Date.now() - (19 - i) * 60000).toISOString() 
+            }))
+        };
+        
+        // Check if user is already logged in
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                loginScreen.style.display = 'none';
+                mainApp.style.display = 'flex';
+                
+                // Start fetching ThingSpeak data
+                fetchThingSpeakData();
+                setInterval(fetchThingSpeakData, 5000); // Refresh every 5 seconds
+                
+                // Initialize chart
+                renderChart('heartRate');
+            }
+        }
+        
+        // Call this function on page load
+        checkLoginStatus();
+        
+        // Login functionality
+        loginBtn.addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (email === 'emon@gmail.com' && password === 'emon121') {
+                // Store login status in localStorage
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                loginScreen.style.display = 'none';
+                mainApp.style.display = 'flex';
+                
+                // Start fetching ThingSpeak data
+                fetchThingSpeakData();
+                setInterval(fetchThingSpeakData, 5000); // Refresh every 5 seconds
+                
+                // Initialize chart
+                renderChart('heartRate');
+            } else {
+                alert('Invalid credentials. Please use emon@gmail.com / emon121');
+            }
+        });
+        
+        // Sign out functionality
+        function signOut() {
+            // Clear login status from localStorage
+            localStorage.removeItem('isLoggedIn');
+            
+            mainApp.style.display = 'none';
+            loginScreen.style.display = 'flex';
+            
+            // Reset to dashboard
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.target === 'dashboard') {
+                    item.classList.add('active');
+                }
+            });
+            dashboardScreen.style.display = 'block';
+            notificationsScreen.style.display = 'none';
+            profileScreen.style.display = 'none';
+            
+            // Clear any stored data
+            latestData = {
+                heartRate: [],
+                spo2: [],
+                temperature: [],
+                humidity: []
+            };
+        }
+        
+        signOutBtn.addEventListener('click', signOut);
+        drawerLogoutBtn.addEventListener('click', signOut);
+        
+        // Mark notifications as read
+        markReadBtn.addEventListener('click', function() {
+            notificationBadge.textContent = '0';
+            notificationBadge.style.display = 'none';
+        });
+        
+        // Drawer functionality
+        menuBtn.addEventListener('click', function() {
+            drawer.classList.add('open');
+            drawerOverlay.style.display = 'block';
+        });
+        
+        drawerOverlay.addEventListener('click', function() {
+            drawer.classList.remove('open');
+            drawerOverlay.style.display = 'none';
+        });
+        
+        // Navigation
+        navItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active state
+                navItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                const target = this.dataset.target;
+                
+                // Show correct screen
+                dashboardScreen.style.display = 'none';
+                notificationsScreen.style.display = 'none';
+                profileScreen.style.display = 'none';
+                
+                if (target === 'dashboard') {
+                    dashboardScreen.style.display = 'block';
+                } else if (target === 'notifications') {
+                    notificationsScreen.style.display = 'block';
+                } else if (target === 'profile') {
+                    profileScreen.style.display = 'block';
+                }
+            });
+        });
+        
+        // Chart button functionality
+        chartBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const chartType = this.dataset.chart;
+                
+                // Update button active state
+                chartBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Render the selected chart
+                renderChart(chartType);
+            });
+        });
+        
+        // Prediction button functionality
+        predictBtn.addEventListener('click', function() {
+            predictHealthStatus();
+        });
+        
+        // Fetch data from ThingSpeak
+        function fetchThingSpeakData() {
+            fetch(`${THINGSPEAK_API_URL}?api_key=${THINGSPEAK_API_KEY}&results=20`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data && data.feeds && data.feeds.length > 0) {
+                        const feeds = data.feeds;
+                        
+                        // Clear previous data
+                        latestData.heartRate = [];
+                        latestData.spo2 = [];
+                        latestData.temperature = [];
+                        latestData.humidity = [];
+                        
+                        // Process feeds to extract data
+                        feeds.forEach(feed => {
+                            // Parse values with proper error handling
+                            const parseValue = (value) => {
+                                if (!value) return null;
+                                const parsed = parseFloat(value);
+                                return isNaN(parsed) ? null : parsed;
+                            };
+                            
+                            if (feed.field1) {
+                                const value = parseValue(feed.field1);
+                                if (value !== null) {
+                                    latestData.heartRate.push({value: value, time: feed.created_at});
+                                }
+                            }
+                            if (feed.field2) {
+                                const value = parseValue(feed.field2);
+                                if (value !== null) {
+                                    latestData.spo2.push({value: value, time: feed.created_at});
+                                }
+                            }
+                            if (feed.field3) {
+                                const value = parseValue(feed.field3);
+                                if (value !== null) {
+                                    latestData.humidity.push({value: value, time: feed.created_at});
+                                }
+                            }
+                            if (feed.field4) {
+                                const value = parseValue(feed.field4);
+                                if (value !== null) {
+                                    latestData.temperature.push({value: value, time: feed.created_at});
+                                }
+                            }
+                        });
+                        
+                        // If no data was received, use sample data
+                        if (latestData.heartRate.length === 0) {
+                            console.log('No valid data received from ThingSpeak, using sample data');
+                            latestData = JSON.parse(JSON.stringify(sampleData)); // Deep copy
+                        }
+                        
+                        // Update UI with latest data
+                        if (latestData.heartRate.length > 0) {
+                            const latestHR = latestData.heartRate[latestData.heartRate.length - 1].value;
+                            heartRate.textContent = latestHR.toFixed(0);
+                            updateStatusIndicator('heartRate', latestHR);
+                        }
+                        
+                        if (latestData.spo2.length > 0) {
+                            const latestSpO2 = latestData.spo2[latestData.spo2.length - 1].value;
+                            spo2.textContent = latestSpO2.toFixed(0);
+                            updateStatusIndicator('spo2', latestSpO2);
+                        }
+                        
+                        if (latestData.humidity.length > 0) {
+                            const latestHumidity = latestData.humidity[latestData.humidity.length - 1].value;
+                            humidity.textContent = latestHumidity.toFixed(0);
+                            updateStatusIndicator('humidity', latestHumidity);
+                        }
+                        
+                        if (latestData.temperature.length > 0) {
+                            const latestTemp = latestData.temperature[latestData.temperature.length - 1].value;
+                            temperature.textContent = latestTemp.toFixed(1);
+                            updateStatusIndicator('temperature', latestTemp);
+                        }
+                        
+                        // Update the current chart if it exists
+                        const activeChart = document.querySelector('.chart-btn.active').dataset.chart;
+                        if (activeChart) {
+                            renderChart(activeChart);
+                        }
+                    } else {
+                        console.log('No feeds data received from ThingSpeak, using sample data');
+                        // Use sample data if no data from ThingSpeak
+                        latestData = JSON.parse(JSON.stringify(sampleData)); // Deep copy
+                        updateUIWithSampleData();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching ThingSpeak data:', error);
+                    // Use sample data on error
+                    latestData = JSON.parse(JSON.stringify(sampleData)); // Deep copy
+                    updateUIWithSampleData();
+                });
+        }
+        
+        // Update UI with sample data
+        function updateUIWithSampleData() {
+            // Update UI with sample data
+            if (latestData.heartRate.length > 0) {
+                const latestHR = latestData.heartRate[latestData.heartRate.length - 1].value;
+                heartRate.textContent = latestHR.toFixed(0);
+                updateStatusIndicator('heartRate', latestHR);
+            }
+            
+            if (latestData.spo2.length > 0) {
+                const latestSpO2 = latestData.spo2[latestData.spo2.length - 1].value;
+                spo2.textContent = latestSpO2.toFixed(0);
+                updateStatusIndicator('spo2', latestSpO2);
+            }
+            
+            if (latestData.humidity.length > 0) {
+                const latestHumidity = latestData.humidity[latestData.humidity.length - 1].value;
+                humidity.textContent = latestHumidity.toFixed(0);
+                updateStatusIndicator('humidity', latestHumidity);
+            }
+            
+            if (latestData.temperature.length > 0) {
+                const latestTemp = latestData.temperature[latestData.temperature.length - 1].value;
+                temperature.textContent = latestTemp.toFixed(1);
+                updateStatusIndicator('temperature', latestTemp);
+            }
+            
+            // Update the current chart
+            const activeChart = document.querySelector('.chart-btn.active').dataset.chart;
+            if (activeChart) {
+                renderChart(activeChart);
+            }
+        }
+        
+        // Update status indicator based on value
+        function updateStatusIndicator(type, value) {
+            if (isNaN(value)) return;
+            
+            let statusElement;
+            let normalRange;
+            let warningRange;
+            
+            if (type === 'heartRate') {
+                statusElement = hrStatus;
+                normalRange = {min: 60, max: 100};
+                warningRange = {min: 50, max: 110};
+            } else if (type === 'spo2') {
+                statusElement = spo2Status;
+                normalRange = {min: 95, max: 100};
+                warningRange = {min: 90, max: 95};
+            } else if (type === 'humidity') {
+                statusElement = humidityStatus;
+                normalRange = {min: 30, max: 70};
+                warningRange = {min: 20, max: 80};
+            } else if (type === 'temperature') {
+                statusElement = tempStatus;
+                normalRange = {min: 36.0, max: 37.5};
+                warningRange = {min: 35.5, max: 38.0};
+            }
+            
+            // Reset status
+            statusElement.className = 'metric-status';
+            
+            // Set status based on value ranges
+            if (value >= normalRange.min && value <= normalRange.max) {
+                statusElement.classList.add('status-normal');
+            } else if (value >= warningRange.min && value <= warningRange.max) {
+                statusElement.classList.add('status-warning');
+            } else {
+                statusElement.classList.add('status-danger');
+            }
+        }
+        
+        // Render the chart
+        function renderChart(chartType) {
+            const ctx = document.getElementById('trendChart');
+            
+            // Destroy existing chart if it exists
+            if (currentChart) {
+                currentChart.destroy();
+            }
+            
+            // Show loading state if no data
+            if (latestData[chartType].length === 0) {
+                ctx.parentElement.innerHTML = '<div class="loading"><i class="fas fa-spinner"></i> Loading chart data...</div>';
+                return;
+            }
+            
+            // Set chart title
+            if (chartType === 'heartRate') {
+                chartTitle.textContent = 'Heart Rate Trend';
+            } else if (chartType === 'spo2') {
+                chartTitle.textContent = 'Oxygen Saturation Trend';
+            } else if (chartType === 'temperature') {
+                chartTitle.textContent = 'Temperature Trend';
+            }
+            
+            // Prepare data for chart
+            const data = latestData[chartType].slice(-20); // Get last 20 data points
+            const labels = data.map(item => {
+                const date = new Date(item.time);
+                return `${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            });
+            const values = data.map(item => item.value);
+            
+            // Create chart
+            currentChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: chartType === 'heartRate' ? 'Heart Rate (BPM)' : 
+                               chartType === 'spo2' ? 'SpO₂ (%)' : 'Temperature (°C)',
+                        data: values,
+                        borderColor: chartColors[chartType],
+                        backgroundColor: `${chartColors[chartType]}20`,
+                        borderWidth: 2,
+                        pointRadius: 3,
+                        pointBackgroundColor: chartColors[chartType],
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Predict health status using ML model
+        function predictHealthStatus() {
+            // Show loading state
+            predictionResult.style.display = 'block';
+            predictionResult.className = 'prediction-result';
+            predictionTitle.textContent = 'Predicting...';
+            predictionText.textContent = 'Sending data to ML server for analysis';
+            
+            // Prepare data for prediction (using the latest values)
+            const predictionData = {
+                Temperature: latestData.temperature.length > 0 ? latestData.temperature[latestData.temperature.length - 1].value : 0,
+                Heart_Rate: latestData.heartRate.length > 0 ? latestData.heartRate[latestData.heartRate.length - 1].value : 0,
+                Oxygen_Saturation: latestData.spo2.length > 0 ? latestData.spo2[latestData.spo2.length - 1].value : 0
+            };
+            
+            // Send data to ML server
+            fetch(ML_SERVER_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(predictionData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Display prediction result
+                const prediction = data.prediction;
+                predictionTitle.textContent = `Prediction: ${prediction}`;
+                
+                // Set appropriate styling based on prediction
+                if (prediction === 'Normal') {
+                    predictionResult.classList.add('prediction-normal');
+                    predictionText.textContent = 'The patient appears to be in normal health condition.';
+                } else if (prediction === 'Mild') {
+                    predictionResult.classList.add('prediction-mild');
+                    predictionText.textContent = 'Mild condition detected. Monitor the patient closely.';
+                    addNotification('Mild Condition Alert', `Patient shows signs of mild health issues.`);
+                } else if (prediction === 'Severe') {
+                    predictionResult.classList.add('prediction-severe');
+                    predictionText.textContent = 'Severe condition detected. Immediate attention required!';
+                    addNotification('Severe Condition Alert', `Patient shows signs of severe health issues. Immediate attention required!`);
+                } else if (prediction === 'Chronic') {
+                    predictionResult.classList.add('prediction-chronic');
+                    predictionText.textContent = 'Chronic condition detected. Long-term care needed.';
+                    addNotification('Chronic Condition Alert', `Patient shows signs of chronic health issues.`);
+                } else {
+                    predictionText.textContent = 'Unknown prediction result.';
+                }
+            })
+            .catch(error => {
+                console.error('Error predicting health status:', error);
+                predictionTitle.textContent = 'Prediction Failed';
+                predictionText.textContent = 'Could not connect to ML server. Please ensure the server is running on localhost:5000';
+            });
+        }
+        
+        // Add a new notification
+        function addNotification(title, description) {
+            const notificationList = document.querySelector('.notification-list');
+            const now = new Date();
+            const timeString = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            const notificationCard = document.createElement('div');
+            notificationCard.className = 'notification-card warning';
+            notificationCard.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-icon warning">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="notification-details">
+                        <h3 class="notification-title">${title}</h3>
+                        <p class="notification-description">${description}</p>
+                        <p class="notification-time">Just now</p>
+                    </div>
+                </div>
+            `;
+            
+            notificationList.insertBefore(notificationCard, notificationList.firstChild);
+            
+            // Update notification badge
+            const currentCount = parseInt(notificationBadge.textContent);
+            notificationBadge.textContent = currentCount + 1;
+            notificationBadge.style.display = 'flex';
+        }
+    });
+</script>
+    
+</body>
+</html>
