@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EMON AI Chat</title>
+    <title>EMON AI Chat Pro</title>
     <!-- Load Inter font -->
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
     <!-- Load Pacifico font -->
@@ -12,6 +12,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Remix Icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     
     <script>
         // Extend Tailwind config to add custom primary color
@@ -90,7 +93,7 @@
         /* Message bubbles */
         .message-bubble {
             max-width: 75%;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1rem;
             border-radius: 1rem;
             white-space: pre-wrap;
         }
@@ -99,6 +102,7 @@
             background-color: #2b6be6;
             color: white;
             margin-left: auto;
+            text-align: left;
         }
         
         body.dark .message-user {
@@ -109,11 +113,49 @@
             background-color: #e5e7eb;
             color: #1f2937;
             margin-right: auto;
+            text-align: justify;
         }
         
         body.dark .message-assistant {
             background-color: #333;
             color: #e5e7eb;
+        }
+        
+        /* Special content formatting */
+        .message-content {
+            line-height: 1.6;
+        }
+        
+        .message-content pre {
+            background-color: #2d3748;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
+        
+        .message-content code {
+            background-color: #e5e7eb;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.875em;
+        }
+        
+        body.dark .message-content code {
+            background-color: #4b5563;
+            color: #e5e7eb;
+        }
+        
+        .message-content blockquote {
+            border-left: 4px solid #2b6be6;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+        }
+        
+        body.dark .message-content blockquote {
+            border-left-color: #3b82f6;
         }
         
         /* Input area */
@@ -280,7 +322,7 @@
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130,246, 0); }
         }
         
         .animate-pulse {
@@ -357,6 +399,30 @@
             border-color: #444;
         }
 
+        /* Voice input animation */
+        .voice-listening {
+            background-color: #ef4444 !important;
+            color: white !important;
+            animation: pulse 1.5s infinite;
+        }
+        
+        /* Text-to-speech playing state */
+        .speaking {
+            position: relative;
+        }
+        
+        .speaking::after {
+            content: "";
+            position: absolute;
+            right: -5px;
+            top: -5px;
+            width: 8px;
+            height: 8px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+
         /* Responsive sidebar styles */
         @media (max-width: 768px) {
             #sidebar {
@@ -420,6 +486,20 @@
             background: #1f1f1f;
             color: white;
         }
+        
+        /* Math expression styling */
+        .math-expression {
+            font-style: italic;
+            padding: 0.5rem;
+            background-color: #f3f4f6;
+            border-radius: 0.375rem;
+            margin: 0.5rem 0;
+            display: inline-block;
+        }
+        
+        body.dark .math-expression {
+            background-color: #374151;
+        }
     </style>
 </head>
 <body class="font-[Inter] text-gray-900 tint-0 min-h-screen flex items-center justify-center flex-col text-center px-6">
@@ -427,7 +507,7 @@
     <!-- Login Section -->
     <div id="login-section" class="z-10">
         <h1 class="mb-4">
-            <span class="text-5xl md:text-6xl font-pacifico text-primary">Emon AI Chat</span>
+            <span class="text-5xl md:text-6xl font-pacifico text-primary">Emon AI Chat Pro</span>
         </h1>
         <p class="text-gray-600 text-lg mb-8">
             Your smart AI assistant powered by OpenRouter
@@ -480,7 +560,7 @@
                 <div class="h-16 px-4 py-3 flex items-center justify-between border-b border-gray-200">
                     <div class="flex items-center">
                         <span class="text-xl font-['Pacifico'] text-primary">Emon</span>
-                        <span class="ml-2 font-semibold">AI Chat</span>
+                        <span class="ml-2 font-semibold">AI Chat Pro</span>
                     </div>
                     <button id="collapse-sidebar" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-gray-700 md:hidden">
                         <i class="ri-arrow-left-line ri-lg"></i>
@@ -535,7 +615,7 @@
                     <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                         <i class="ri-robot-line ri-2x text-primary"></i>
                     </div>
-                    <h1 class="text-2xl font-bold mb-2">Welcome to EMON AI Chat</h1>
+                    <h1 class="text-2xl font-bold mb-2">Welcome to EMON AI Chat Pro</h1>
                     <p class="text-gray-600 mb-8">
                         <span class="text-xl font-['Pacifico'] text-primary">Ask me anything or try one of these examples:</span>
                     </p>
@@ -567,7 +647,7 @@
                         <button id="add-button" class="icon-button p-2" title="Add image or code" aria-label="Add image or code" type="button">
                             <i class="ri-add-line ri-lg"></i>
                         </button>
-                        <button id="voice-button" class="icon-button p-2" title="Voice input (demo)" aria-label="Voice input" type="button">
+                        <button id="voice-button" class="icon-button p-2" title="Voice input" aria-label="Voice input" type="button">
                             <i class="ri-mic-line ri-lg"></i>
                         </button>
                     </div>
@@ -612,7 +692,7 @@
 
         // Predefined responses for common queries
         const manualReplies = {
-            "what's your name": "My name is EMA made by ABS EMON.",
+            "what's your name": "My name is EMA. Made by A B S EMON.",
             "your name": "My name is ABS EMON made by EMON.",
             "how are you": "I'm just a chatbot, but thanks for asking! I'm ready to assist you.",
             "who made you": "I was created by ABS EMON.",
@@ -620,7 +700,6 @@
             "what can you do": "I can assist you with basic queries and provide helpful information.",
             "hello": "Hello! How can I help you today?",
             "GDU full form": "Gazakur Digital University",
-           
         };
 
         // DOM elements
@@ -647,17 +726,197 @@
         const chats = {};
         let currentChatId = null;
         let isRecording = false;
-        let mediaRecorder = null;
-        let audioChunks = [];
+        let recognition = null;
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+        let isSpeaking = false;
+        let autoPlayEnabled = true;
 
-        // Login functionality
-        loginForm.addEventListener('submit', function(e) {
+        // Format message content for better readability
+        function formatMessageContent(content) {
+            // Replace code blocks with formatted versions
+            content = content.replace(/```(\w+)?\s([\s\S]*?)```/g, function(match, lang, code) {
+                return `<pre><code class="language-${lang || 'text'}">${escapeHtml(code.trim())}</code></pre>`;
+            });
+            
+            // Replace inline code
+            content = content.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Replace math expressions (simple detection)
+            content = content.replace(/(\$\$?)([^\$]+)(\$\$?)/g, function(match, start, expr, end) {
+                if ((start === '$' && end === '$') || (start === '$$' && end === '$$')) {
+                    return `<div class="math-expression">${expr}</div>`;
+                }
+                return match;
+            });
+            
+            // Replace blockquotes
+            content = content.replace(/^&gt;\s(.*$)/gm, '<blockquote>$1</blockquote>');
+            
+            return content;
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Initialize speech recognition if available
+        function initSpeechRecognition() {
+            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+                recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    messageInput.textContent = transcript;
+                    toggleSendButton();
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error', event.error);
+                    stopVoiceInput();
+                };
+                
+                recognition.onend = function() {
+                    stopVoiceInput();
+                };
+            } else {
+                voiceButton.style.display = 'none';
+                console.warn('Speech recognition not supported in this browser');
+            }
+        }
+
+        // Start voice input
+        function startVoiceInput() {
+            if (!recognition) {
+                alert('Speech recognition is not supported in your browser');
+                return;
+            }
+            
+            try {
+                recognition.start();
+                isRecording = true;
+                voiceButton.classList.add('voice-listening');
+                messageInput.textContent = "Listening...";
+                messageInput.classList.add('text-gray-400');
+            } catch (error) {
+                console.error('Speech recognition error:', error);
+                stopVoiceInput();
+            }
+        }
+
+        // Stop voice input
+        function stopVoiceInput() {
+            isRecording = false;
+            voiceButton.classList.remove('voice-listening');
+            messageInput.classList.remove('text-gray-400');
+            
+            if (recognition) {
+                recognition.stop();
+            }
+        }
+
+        // Toggle voice input
+        function toggleVoiceInput() {
+            if (isRecording) {
+                stopVoiceInput();
+            } else {
+                startVoiceInput();
+            }
+        }
+
+        // Text-to-speech function with toggle
+        function toggleTextToSpeech(text, button) {
+            // Stop any ongoing speech
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+                isSpeaking = false;
+                button.innerHTML = '<i class="ri-volume-up-line"></i>';
+                button.classList.remove('speaking');
+                return;
+            }
+            
+            // Create and speak the utterance
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            
+            // Set up event listeners
+            currentUtterance.onend = function() {
+                isSpeaking = false;
+                button.innerHTML = '<i class="ri-volume-up-line"></i>';
+                button.classList.remove('speaking');
+            };
+            
+            currentUtterance.onerror = function() {
+                isSpeaking = false;
+                button.innerHTML = '<i class="ri-volume-up-line"></i>';
+                button.classList.remove('speaking');
+            };
+            
+            // Start speaking
+            speechSynthesis.speak(currentUtterance);
+            isSpeaking = true;
+            button.innerHTML = '<i class="ri-pause-line"></i>';
+            button.classList.add('speaking');
+        }
+
+        // Auto-play text-to-speech for assistant messages (only when first received)
+        function autoPlayTextToSpeech(text) {
+            if (!autoPlayEnabled) return;
+            
+            // Stop any ongoing speech
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+            
+            // Create and speak the utterance
+            currentUtterance = new SpeechSynthesisUtterance(text);
+            
+            // Set up event listeners
+            currentUtterance.onend = function() {
+                isSpeaking = false;
+                // Update all sound buttons to play icon
+                document.querySelectorAll('.sound-btn').forEach(btn => {
+                    btn.innerHTML = '<i class="ri-volume-up-line"></i>';
+                    btn.classList.remove('speaking');
+                });
+            };
+            
+            currentUtterance.onerror = function() {
+                isSpeaking = false;
+                // Update all sound buttons to play icon
+                document.querySelectorAll('.sound-btn').forEach(btn => {
+                    btn.innerHTML = '<i class="ri-volume-up-line"></i>';
+                    btn.classList.remove('speaking');
+                });
+            };
+            
+            // Start speaking
+            speechSynthesis.speak(currentUtterance);
+            isSpeaking = true;
+            
+            // Update all sound buttons to pause icon
+            document.querySelectorAll('.sound-btn').forEach(btn => {
+                btn.innerHTML = '<i class="ri-pause-line"></i>';
+                btn.classList.add('speaking');
+            });
+        }
+
+        // Login functionality - FIXED
+        document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            OPENROUTER_API_KEY = apiKeyInput.value;
+            OPENROUTER_API_KEY = document.getElementById('api-key').value;
             
-            if (email === 'emon@gmail.com' && password === 'Emon121' && OPENROUTER_API_KEY) {
+            if (email === 'emon@gmail.com' && password === 'emon121' && OPENROUTER_API_KEY) {
                 // Successful login
                 loginError.classList.add('hidden');
                 loginSection.classList.add('hidden');
@@ -728,6 +987,9 @@
             
             // Setup responsive sidebar
             setupResponsiveSidebar();
+            
+            // Initialize speech recognition
+            initSpeechRecognition();
         });
 
         // Setup responsive sidebar functionality
@@ -820,7 +1082,7 @@
             return chatId;
         }
 
-        function appendMessage(message, isUser, messageId = null) {
+        function appendMessage(message, isUser, messageId = null, isNewMessage = false) {
             const messageContainer = document.createElement('div');
             messageContainer.className = `message-container mb-4 flex flex-col ${isUser ? 'items-end' : 'items-start'}`;
             
@@ -830,11 +1092,45 @@
             
             const bubble = document.createElement('div');
             bubble.className = `message-bubble ${isUser ? 'message-user' : 'message-assistant'}`;
-            bubble.textContent = message;
+            
+            // Create content container with formatting for assistant messages
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            
+            if (isUser) {
+                contentDiv.textContent = message;
+            } else {
+                contentDiv.innerHTML = formatMessageContent(message);
+                // Apply syntax highlighting to code blocks
+                setTimeout(() => {
+                    contentDiv.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightElement(block);
+                    });
+                }, 0);
+            }
+            
+            bubble.appendChild(contentDiv);
             
             // Create action buttons
             const actions = document.createElement('div');
             actions.className = 'message-actions';
+            
+            // Sound button (for text-to-speech) - for both user and assistant messages
+            const soundBtn = document.createElement('button');
+            soundBtn.className = 'action-btn sound-btn';
+            soundBtn.innerHTML = '<i class="ri-volume-up-line"></i>';
+            soundBtn.title = 'Read aloud';
+            soundBtn.addEventListener('click', () => {
+                toggleTextToSpeech(message, soundBtn);
+            });
+            actions.appendChild(soundBtn);
+            
+            // Auto-play the assistant message only if it's a new message
+            if (!isUser && isNewMessage) {
+                setTimeout(() => {
+                    autoPlayTextToSpeech(message);
+                }, 300);
+            }
             
             // Copy button
             const copyBtn = document.createElement('button');
@@ -957,7 +1253,7 @@
             };
             
             chats[currentChatId].messages.push(userMsg);
-            appendMessage(content, true, userMsg.id);
+            appendMessage(content, true, userMsg.id, false);
             
             // Clear input
             messageInput.textContent = '';
@@ -977,7 +1273,7 @@
                 };
                 
                 chats[currentChatId].messages.push(assistantMsg);
-                appendMessage(manualReply, false, assistantMsg.id);
+                appendMessage(manualReply, false, assistantMsg.id, true);
                 saveChatsToStorage();
                 return;
             }
@@ -1048,7 +1344,7 @@
                 };
                 
                 chats[currentChatId].messages.push(assistantMsg);
-                appendMessage(botResponse, false, assistantMsg.id);
+                appendMessage(botResponse, false, assistantMsg.id, true);
                 
                 // Update chat title if it's the first message
                 if (chats[currentChatId].messages.length === 2) {
@@ -1087,7 +1383,7 @@
                     };
                     
                     chats[currentChatId].messages.push(errorMsg);
-                    appendMessage(errorMsg.content, false, errorMsg.id);
+                    appendMessage(errorMsg.content, false, errorMsg.id, true);
                 } else {
                     // Show error message with unique ID
                     const errorMsg = {
@@ -1098,7 +1394,7 @@
                     };
                     
                     chats[currentChatId].messages.push(errorMsg);
-                    appendMessage(errorMsg.content, false, errorMsg.id);
+                    appendMessage(errorMsg.content, false, errorMsg.id, true);
                 }
                 
                 saveChatsToStorage();
@@ -1215,7 +1511,8 @@
             chatMessages.innerHTML = '';
             
             messages.forEach(msg => {
-                appendMessage(msg.content, msg.role === 'user', msg.id);
+                // When loading from storage, don't auto-play
+                appendMessage(msg.content, msg.role === 'user', msg.id, false);
             });
         }
 
@@ -1252,99 +1549,7 @@
         }
 
         // Voice recording functionality
-        voiceButton.addEventListener('click', toggleRecording);
-
-        function toggleRecording() {
-            if (isRecording) {
-                stopRecording();
-            } else {
-                startRecording();
-            }
-        }
-
-        async function startRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-                
-                mediaRecorder.ondataavailable = event => {
-                    audioChunks.push(event.data);
-                };
-                
-                mediaRecorder.onstop = async () => {
-                    // In a real app, you would send the audio to a server for processing
-                    // For this demo, we'll just simulate voice input with a placeholder
-                    if (currentChatId === null) {
-                        startNewChat();
-                    }
-                    
-                    welcomeSection.style.display = 'none';
-                    chatMessages.classList.remove('hidden');
-                    
-                    const simulatedTranscription = "This is a simulation of voice input. In a real app, your audio would be transcribed here.";
-                    
-                    // Add user message with unique ID
-                    const userMsg = {
-                        id: Date.now().toString(),
-                        role: 'user',
-                        content: simulatedTranscription,
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                    chats[currentChatId].messages.push(userMsg);
-                    appendMessage(simulatedTranscription, true, userMsg.id);
-                    
-                    // Add assistant response with unique ID
-                    const assistantMsg = {
-                        id: Date.now().toString(),
-                        role: 'assistant',
-                        content: "Voice input received! In a real application, I would process your audio and respond appropriately.",
-                        timestamp: new Date().toISOString()
-                    };
-                    
-                    chats[currentChatId].messages.push(assistantMsg);
-                    appendMessage(assistantMsg.content, false, assistantMsg.id);
-                    
-                    saveChatsToStorage();
-                    
-                    // Stop all tracks
-                    stream.getTracks().forEach(track => track.stop());
-                };
-                
-                mediaRecorder.start();
-                isRecording = true;
-                
-                // Update button appearance
-                voiceButton.classList.add('text-red-500', 'animate-pulse');
-                voiceButton.innerHTML = '<i class="ri-square-fill"></i>';
-                
-                // Auto-stop after 60 seconds (safety)
-                setTimeout(() => {
-                    if (isRecording) {
-                        stopRecording();
-                    }
-                }, 60000);
-                
-            } catch (err) {
-                console.error("Mic access error:", err);
-                alert("Could not access microphone");
-                isRecording = false;
-                voiceButton.classList.remove('text-red-500', 'animate-pulse');
-                voiceButton.innerHTML = '<i class="ri-mic-line"></i>';
-            }
-        }
-
-        function stopRecording() {
-            if (mediaRecorder && isRecording) {
-                mediaRecorder.stop();
-                isRecording = false;
-                
-                // Reset button appearance
-                voiceButton.classList.remove('text-red-500', 'animate-pulse');
-                voiceButton.innerHTML = '<i class="ri-mic-line"></i>';
-            }
-        }
+        voiceButton.addEventListener('click', toggleVoiceInput);
 
         // Event listeners
         newChatButton.addEventListener('click', startNewChat);
@@ -1375,3 +1580,4 @@
     </script>
 </body>
 </html>
+
