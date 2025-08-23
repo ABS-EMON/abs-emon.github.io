@@ -132,11 +132,12 @@
             padding: 1rem;
             overflow-x: auto;
             margin: 0.5rem 0;
+            position: relative;
         }
         
         .message-content code {
-            background-color: #e5e7eb;
-            padding: 0.2rem 0.4rem;
+            background-color: #FFFFFF;
+            padding: 0.1rem 0.2rem;
             border-radius: 0.25rem;
             font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.875em;
@@ -144,7 +145,7 @@
         
         body.dark .message-content code {
             background-color: #4b5563;
-            color: #e5e7eb;
+            color: #057EF8;
         }
         
         .message-content blockquote {
@@ -500,6 +501,61 @@
         body.dark .math-expression {
             background-color: #374151;
         }
+        
+        /* Code block container */
+        .code-block-container {
+            position: relative;
+        }
+
+        /* Copy button */
+        .copy-code-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background-color: #2d3748;
+            color: white;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            z-index: 10;
+        }
+
+        .code-block-container:hover .copy-code-button {
+            opacity: 1;
+        }
+
+        body.dark .copy-code-button {
+            background-color: #4b5563;
+            color: #e5e7eb;
+        }
+
+        .copy-code-button:hover {
+            background-color: #3b82f6;
+        }
+
+        /* Copy success feedback */
+        .copy-success {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background-color: #10b981;
+            color: white;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            z-index: 10;
+            animation: fadeOut 1.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
     </style>
 </head>
 <body class="font-[Inter] text-gray-900 tint-0 min-h-screen flex items-center justify-center flex-col text-center px-6">
@@ -662,20 +718,6 @@
         </div>
     </div>
 
-    <!-- Background Tint Animation -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const tints = ['tint-0', 'tint-1', 'tint-2'];
-            let i = 0;
-
-            setInterval(() => {
-                document.body.classList.remove(...tints);
-                document.body.classList.add(tints[i]);
-                i = (i + 1) % tints.length;
-            }, 4000);
-        });
-    </script>
-
     <script>
         // Available free models (try these in order if one fails)
         const AVAILABLE_MODELS = [
@@ -692,7 +734,7 @@
 
         // Predefined responses for common queries
         const manualReplies = {
-            "what's your name": "My name is EMA. Made by A B S EMON.",
+            "what's your name": "My name is EMA made by ABS EMON.",
             "your name": "My name is ABS EMON made by EMON.",
             "how are you": "I'm just a chatbot, but thanks for asking! I'm ready to assist you.",
             "who made you": "I was created by ABS EMON.",
@@ -734,9 +776,17 @@
 
         // Format message content for better readability
         function formatMessageContent(content) {
-            // Replace code blocks with formatted versions
+            // Replace code blocks with formatted versions that include copy buttons
             content = content.replace(/```(\w+)?\s([\s\S]*?)```/g, function(match, lang, code) {
-                return `<pre><code class="language-${lang || 'text'}">${escapeHtml(code.trim())}</code></pre>`;
+                const escapedCode = escapeHtml(code.trim());
+                return `
+                    <div class="code-block-container">
+                        <button class="copy-code-button" onclick="copyCodeToClipboard(this)">
+                            <i class="ri-file-copy-line"></i> Copy
+                        </button>
+                        <pre><code class="language-${lang || 'text'}">${escapedCode}</code></pre>
+                    </div>
+                `;
             });
             
             // Replace inline code
@@ -754,6 +804,30 @@
             content = content.replace(/^&gt;\s(.*$)/gm, '<blockquote>$1</blockquote>');
             
             return content;
+        }
+
+        // Copy code to clipboard function
+        function copyCodeToClipboard(button) {
+            const codeBlock = button.nextElementSibling;
+            const codeText = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                // Show success feedback
+                const success = document.createElement('div');
+                success.className = 'copy-success';
+                success.textContent = 'Copied!';
+                
+                const container = button.parentElement;
+                container.appendChild(success);
+                
+                // Remove success message after animation
+                setTimeout(() => {
+                    success.remove();
+                }, 1500);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy code to clipboard');
+            });
         }
 
         // Helper function to escape HTML
@@ -909,36 +983,6 @@
             });
         }
 
-        // Login functionality - FIXED
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            OPENROUTER_API_KEY = document.getElementById('api-key').value;
-            
-            if (email === 'emon@gmail.com' && password === 'emon121' && OPENROUTER_API_KEY) {
-                // Successful login
-                loginError.classList.add('hidden');
-                loginSection.classList.add('hidden');
-                chatContainer.classList.remove('hidden');
-                
-                // Store login state and API key
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('apiKey', OPENROUTER_API_KEY);
-                
-                loadChatsFromStorage();
-            } else {
-                // Failed login
-                loginError.classList.remove('hidden');
-                if (!OPENROUTER_API_KEY) {
-                    loginError.textContent = "Please enter a valid OpenRouter API key";
-                } else {
-                    loginError.textContent = "Invalid email or password. Please try again.";
-                }
-            }
-        });
-
         // Check if user is already logged in
         function checkLoginStatus() {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -973,23 +1017,6 @@
             document.body.classList.toggle('dark', isDark);
             sidebar.classList.toggle('dark', isDark);
             localStorage.setItem('darkMode', isDark ? '1' : '0');
-        });
-
-        // Load dark mode preference
-        window.addEventListener('DOMContentLoaded', () => {
-            const isDark = localStorage.getItem('darkMode') === '1';
-            darkModeToggle.checked = isDark;
-            document.body.classList.toggle('dark', isDark);
-            sidebar.classList.toggle('dark', isDark);
-            
-            // Check login status
-            checkLoginStatus();
-            
-            // Setup responsive sidebar
-            setupResponsiveSidebar();
-            
-            // Initialize speech recognition
-            initSpeechRecognition();
         });
 
         // Setup responsive sidebar functionality
@@ -1577,7 +1604,63 @@
                 messageInput.focus();
             });
         });
+
+        // Login functionality - FIXED
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            OPENROUTER_API_KEY = document.getElementById('api-key').value;
+            
+            if (email === 'emon@gmail.com' && password === 'Emon121' && OPENROUTER_API_KEY) {
+                // Successful login
+                loginError.classList.add('hidden');
+                loginSection.classList.add('hidden');
+                chatContainer.classList.remove('hidden');
+                
+                // Store login state and API key
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('apiKey', OPENROUTER_API_KEY);
+                
+                loadChatsFromStorage();
+            } else {
+                // Failed login
+                loginError.classList.remove('hidden');
+                if (!OPENROUTER_API_KEY) {
+                    loginError.textContent = "Please enter a valid OpenRouter API key";
+                } else {
+                    loginError.textContent = "Invalid email or password. Please try again.";
+                }
+            }
+        });
+
+        // Load dark mode preference and check login status
+        window.addEventListener('DOMContentLoaded', () => {
+            const isDark = localStorage.getItem('darkMode') === '1';
+            darkModeToggle.checked = isDark;
+            document.body.classList.toggle('dark', isDark);
+            sidebar.classList.toggle('dark', isDark);
+            
+            // Check login status
+            checkLoginStatus();
+            
+            // Setup responsive sidebar
+            setupResponsiveSidebar();
+            
+            // Initialize speech recognition
+            initSpeechRecognition();
+            
+            // Background Tint Animation
+            const tints = ['tint-0', 'tint-1', 'tint-2'];
+            let i = 0;
+
+            setInterval(() => {
+                document.body.classList.remove(...tints);
+                document.body.classList.add(tints[i]);
+                i = (i + 1) % tints.length;
+            }, 4000);
+        });
     </script>
 </body>
 </html>
-
