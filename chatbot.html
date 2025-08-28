@@ -32,7 +32,7 @@
         };
     </script>
 
-    <style>
+     <style>
         body {
             transition: background 1s ease-in-out;
             font-family: 'Inter', sans-serif;
@@ -556,7 +556,60 @@
             70% { opacity: 1; }
             100% { opacity: 0; }
         }
+
+        /* Image generation styles */
+        .generated-image {
+            max-width: 100%;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-image-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background-color: #2b6be6;
+            color: white;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .download-image-btn:hover {
+            background-color: #1e4db7;
+        }
+
+        .image-generation-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .image-generation-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2b6be6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 0.5rem;
+        }
+
+        body.dark .image-generation-loading .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #3b82f6;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
+
 </head>
 <body class="font-[Inter] text-gray-900 tint-0 min-h-screen flex items-center justify-center flex-col text-center px-6">
 
@@ -724,8 +777,12 @@
             "google/palm-2-chat-bison-32k",
             "mistralai/mistral-7b-instruct", 
             "huggingfaceh4/zephyr-7b-beta",
-            "meta-llama/llama-2-13b-chat"
+            "meta-llama/llama-2-13b-chat",
+            
         ];
+        
+        // Image generation model
+        const IMAGE_GENERATION_MODEL = "google/gemini-2.5-flash-image-preview:free";
         
         const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
         
@@ -774,8 +831,106 @@
         let isSpeaking = false;
         let autoPlayEnabled = true;
 
+        // Check if prompt is requesting image generation
+        function isImageGenerationRequest(prompt) {
+            const lowerPrompt = prompt.toLowerCase();
+            return lowerPrompt.includes('generate image') || 
+                   lowerPrompt.includes('create image') || 
+                   lowerPrompt.includes('make an image') || 
+                   lowerPrompt.includes('draw an image') || 
+                   lowerPrompt.includes('show me an image') || 
+                   lowerPrompt.includes('picture of') || 
+                   lowerPrompt.includes('image of');
+        }
+
+        // Extract image description from prompt
+        function extractImageDescription(prompt) {
+            // Remove image generation trigger phrases
+            let description = prompt
+                .replace(/generate image of /gi, '')
+                .replace(/create image of /gi, '')
+                .replace(/make an image of /gi, '')
+                .replace(/draw an image of /gi, '')
+                .replace(/show me an image of /gi, '')
+                .replace(/picture of /gi, '')
+                .replace(/image of /gi, '')
+                .trim();
+            
+            // If the prompt still contains "generate image" or similar, just use the whole prompt
+            if (description.length < 10 || 
+                description.toLowerCase().includes('generate image') || 
+                description.toLowerCase().includes('create image')) {
+                return prompt;
+            }
+            
+            return description;
+        }
+
+        // Generate image using OpenRouter API
+        async function generateImage(prompt) {
+            try {
+                const response = await fetch(OPENROUTER_API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+                        "HTTP-Referer": window.location.href,
+                        "X-Title": "Chatbot",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "model": IMAGE_GENERATION_MODEL,
+                        "messages": [
+                            {
+                                "role": "user",
+                                "content": prompt
+                            }
+                        ],
+                        "modalities": ["image", "text"]
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`API error: ${response.status} ${response.statusText}. ${errorText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+                    throw new Error("Invalid response format from API");
+                }
+                
+                // Extract image URL from response - Gemini returns images in a different format
+                const choice = data.choices[0].message;
+                const imgUrl = choice.images?.[0]?.image_url?.url;
+                
+                if (!imgUrl) {
+                    throw new Error("No image returned. The model may not support image generation or the prompt was not appropriate.");
+                }
+                
+                return imgUrl;
+            } catch (error) {
+                console.error("Error generating image:", error);
+                throw error;
+            }
+        }
+
         // Format message content for better readability
         function formatMessageContent(content) {
+            // Check if content is an image URL
+            if (content.startsWith('http') || content.startsWith('data:image')) {
+                return `
+                    <div class="generated-image-container">
+                        <img src="${content}" alt="Generated image" class="generated-image">
+                        <div class="mt-2">
+                            <a href="${content}" download="generated-image.png" class="download-image-btn">
+                                <i class="ri-download-line"></i> Download Image
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+            
             // Replace code blocks with formatted versions that include copy buttons
             content = content.replace(/```(\w+)?\s([\s\S]*?)```/g, function(match, lang, code) {
                 const escapedCode = escapeHtml(code.trim());
@@ -1109,7 +1264,7 @@
             return chatId;
         }
 
-        function appendMessage(message, isUser, messageId = null, isNewMessage = false) {
+        function appendMessage(message, isUser, messageId = null, isNewMessage = false, isImage = false) {
             const messageContainer = document.createElement('div');
             messageContainer.className = `message-container mb-4 flex flex-col ${isUser ? 'items-end' : 'items-start'}`;
             
@@ -1152,8 +1307,8 @@
             });
             actions.appendChild(soundBtn);
             
-            // Auto-play the assistant message only if it's a new message
-            if (!isUser && isNewMessage) {
+            // Auto-play the assistant message only if it's a new message and not an image
+            if (!isUser && isNewMessage && !isImage) {
                 setTimeout(() => {
                     autoPlayTextToSpeech(message);
                 }, 300);
@@ -1305,7 +1460,85 @@
                 return;
             }
             
-            // Show typing indicator
+            // Check if this is an image generation request
+            if (isImageGenerationRequest(content)) {
+                const imageDescription = extractImageDescription(content);
+                
+                // Show image generation indicator
+                const imageGenerationIndicator = document.createElement('div');
+                imageGenerationIndicator.className = 'mb-4 flex flex-col items-start';
+                imageGenerationIndicator.innerHTML = `
+                    <div class="message-bubble message-assistant image-generation-loading">
+                        <div class="spinner"></div>
+                        <div>Generating image: "${imageDescription}"</div>
+                    </div>
+                `;
+                imageGenerationIndicator.id = 'image-generation-indicator';
+                chatMessages.appendChild(imageGenerationIndicator);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                try {
+                    // Generate image
+                    const imageUrl = await generateImage(imageDescription);
+                    
+                    // Remove indicator
+                    const indicator = document.getElementById('image-generation-indicator');
+                    if (indicator) {
+                        indicator.remove();
+                    }
+                    
+                    if (imageUrl) {
+                        // Add image message with unique ID
+                        const assistantMsg = {
+                            id: Date.now().toString(),
+                            role: 'assistant',
+                            content: imageUrl,
+                            timestamp: new Date().toISOString(),
+                            isImage: true // Add flag to identify image messages
+                        };
+                        
+                        chats[currentChatId].messages.push(assistantMsg);
+                        appendMessage(imageUrl, false, assistantMsg.id, true, true);
+                    } else {
+                        // Show error if no image URL returned
+                        const errorMsg = {
+                            id: Date.now().toString(),
+                            role: 'assistant',
+                            content: "Sorry, I couldn't generate an image for that request. Please try again with a different description.",
+                            timestamp: new Date().toISOString()
+                        };
+                        
+                        chats[currentChatId].messages.push(errorMsg);
+                        appendMessage(errorMsg.content, false, errorMsg.id, true);
+                    }
+                    
+                    saveChatsToStorage();
+                    return;
+                } catch (error) {
+                    console.error("Error generating image:", error);
+                    
+                    // Remove indicator
+                    const indicator = document.getElementById('image-generation-indicator');
+                    if (indicator) {
+                        indicator.remove();
+                    }
+                    
+                    // Show error message
+                    const errorMsg = {
+                        id: Date.now().toString(),
+                        role: 'assistant',
+                        content: `Sorry, I encountered an error while generating the image: ${error.message}. Please try again.`,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    chats[currentChatId].messages.push(errorMsg);
+                    appendMessage(errorMsg.content, false, errorMsg.id, true);
+                    saveChatsToStorage();
+                    return;
+                }
+            }
+            
+            // Show typing indicator for text responses
             const typingIndicator = document.createElement('div');
             typingIndicator.className = 'mb-4 flex flex-col items-start';
             typingIndicator.innerHTML = `
@@ -1539,7 +1772,13 @@
             
             messages.forEach(msg => {
                 // When loading from storage, don't auto-play
-                appendMessage(msg.content, msg.role === 'user', msg.id, false);
+                appendMessage(
+                    msg.content, 
+                    msg.role === 'user', 
+                    msg.id, 
+                    false,
+                    msg.isImage || false
+                );
             });
         }
 
