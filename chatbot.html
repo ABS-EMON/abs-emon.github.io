@@ -15,6 +15,8 @@
     <!-- Highlight.js for code syntax highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <!-- jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <script>
         // Extend Tailwind config to add custom primary color
@@ -608,6 +610,46 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        
+        /* Download button styles */
+        .download-chat-btn {
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+        
+        .download-chat-btn:hover {
+            color: #2b6be6;
+        }
+        
+        body.dark .download-chat-btn:hover {
+            color: #3b82f6;
+        }
+        
+        /* Loading indicator for PDF generation */
+        .pdf-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+            color: white;
+        }
+        
+        .pdf-loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #2b6be6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
     </style>
 
 </head>
@@ -771,6 +813,12 @@
         </div>
     </div>
 
+    <!-- PDF Loading Indicator -->
+    <div id="pdf-loading" class="pdf-loading hidden">
+        <div class="pdf-loading-spinner"></div>
+        <p>Generating PDF with images. This may take a moment...</p>
+    </div>
+
     <script>
         // Available free models (try these in order if one fails)
         const AVAILABLE_MODELS = [
@@ -820,6 +868,7 @@
         const collapseSidebarButton = document.getElementById('collapse-sidebar');
         const menuButton = document.getElementById('menu-button');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const pdfLoading = document.getElementById('pdf-loading');
 
         // Chat state
         const chats = {};
@@ -1685,6 +1734,9 @@
                     <button class="edit-btn w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700" title="Edit">
                         <i class="ri-edit-line"></i>
                     </button>
+                    <button class="download-chat-btn w-6 h-6 flex items-center justify-center download-chat-btn" title="Download as PDF">
+                        <i class="ri-download-line"></i>
+                    </button>
                     <button class="delete-btn w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700" title="Delete">
                         <i class="ri-delete-bin-line"></i>
                     </button>
@@ -1708,6 +1760,12 @@
                 }
             });
             
+            // Add event listener for download button
+            div.querySelector('.download-chat-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                downloadChatAsPDF(chat);
+            });
+            
             div.querySelector('.delete-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
                 if (confirm(`Are you sure you want to delete "${chat.title}"?`)) {
@@ -1716,6 +1774,145 @@
             });
             
             return div;
+        }
+        
+        // Function to download chat as PDF with image support
+        async function downloadChatAsPDF(chat) {
+            // Show loading indicator
+            pdfLoading.classList.remove('hidden');
+            
+            try {
+                // Create a new jsPDF instance
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Set document properties
+                doc.setProperties({
+                    title: `${chat.title} - Chat History`,
+                    subject: 'Chat conversation export',
+                    creator: 'EMON AI Chat Pro',
+                    author: 'User'
+                });
+                
+                // Add title
+                doc.setFontSize(20);
+                doc.setFont(undefined, 'bold');
+                doc.text(chat.title, 105, 15, { align: 'center' });
+                
+                // Add export date
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Exported on: ${new Date().toLocaleString()}`, 105, 22, { align: 'center' });
+                
+                let yPosition = 30;
+                const lineHeight = 7;
+                const pageHeight = doc.internal.pageSize.height;
+                const margin = 15;
+                const maxWidth = 180;
+                
+                // Function to add a new page if needed
+                function checkPageBreak(heightNeeded) {
+                    if (yPosition + heightNeeded > pageHeight - margin) {
+                        doc.addPage();
+                        yPosition = margin;
+                        return true;
+                    }
+                    return false;
+                }
+                
+                // Process each message
+                for (let i = 0; i < chat.messages.length; i++) {
+                    const message = chat.messages[i];
+                    const isUser = message.role === 'user';
+                    const timestamp = new Date(message.timestamp).toLocaleTimeString();
+                    
+                    // Check if we need a new page
+                    checkPageBreak(lineHeight * 4);
+                    
+                    // Set message style
+                    doc.setFontSize(11);
+                    doc.setFont(undefined, isUser ? 'bold' : 'normal');
+                    doc.setTextColor(isUser ? 43 : 0, isUser ? 107 : 0, isUser ? 230 : 0);
+                    
+                    // Add message label (User or Assistant)
+                    const label = isUser ? "You" : "Assistant";
+                    doc.text(`${label} (${timestamp}):`, margin, yPosition);
+                    yPosition += lineHeight;
+                    
+                    // Reset text color
+                    doc.setTextColor(0, 0, 0);
+                    
+                    // Check if this message contains an image
+                    if (message.isImage || message.content.startsWith('data:image') || message.content.startsWith('http')) {
+                        try {
+                            // Add image placeholder text
+                            doc.setFont(undefined, 'italic');
+                            doc.text('[Image: See below]', margin, yPosition);
+                            yPosition += lineHeight;
+                            
+                            // Check if we need a new page for the image
+                            checkPageBreak(100);
+                            
+                            // Add the actual image
+                            let imgData = message.content;
+                            
+                            // If it's a URL, we need to fetch it and convert to data URL
+                            if (message.content.startsWith('http')) {
+                                // In a real implementation, you would need to handle CORS issues
+                                // For now, we'll just show a placeholder
+                                doc.setFont(undefined, 'normal');
+                                doc.text('[External image: ' + message.content + ']', margin, yPosition);
+                                yPosition += lineHeight;
+                            } 
+                            // If it's a data URL, we can use it directly
+                            else if (message.content.startsWith('data:image')) {
+                                // Extract the base64 part from the data URL
+                                const base64Data = message.content.split(',')[1];
+                                
+                                // Add the image to the PDF
+                                const imgProps = doc.getImageProperties(base64Data);
+                                const width = Math.min(100, imgProps.width * 100 / imgProps.height);
+                                const height = 100 * (imgProps.height / imgProps.width);
+                                
+                                doc.addImage(base64Data, 'PNG', margin, yPosition, width, height);
+                                yPosition += height + lineHeight;
+                            }
+                        } catch (error) {
+                            console.error('Error adding image to PDF:', error);
+                            doc.setFont(undefined, 'normal');
+                            doc.text('[Error displaying image]', margin, yPosition);
+                            yPosition += lineHeight;
+                        }
+                    } else {
+                        // Regular text message
+                        // Split message into lines that fit the page width
+                        const lines = doc.splitTextToSize(message.content, maxWidth);
+                        
+                        // Check if we need a new page for this message
+                        checkPageBreak(lines.length * lineHeight);
+                        
+                        // Add message content
+                        doc.setFont(undefined, 'normal');
+                        lines.forEach(line => {
+                            doc.text(line, margin, yPosition);
+                            yPosition += lineHeight;
+                        });
+                    }
+                    
+                    // Add some space between messages
+                    yPosition += lineHeight / 2;
+                }
+                
+                // Save the PDF
+                doc.save(`${chat.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_chat.pdf`);
+                
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Failed to generate PDF. Please try again.');
+            } finally {
+                // Hide loading indicator
+                pdfLoading.classList.add('hidden');
+            }
         }
 
         function deleteChat(chatId, div) {
