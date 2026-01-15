@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abu Bakkar Siddique Emon - Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 1in;
+            color: #333;
+            line-height: 1.4;
+        }
+        .header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .photo {
+            width: 120px;
+            height: auto;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+        .contact h1 {
+            margin: 0;
+            color: #007bff;
+            font-size: 28px;
+        }
+        .contact p {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .section h2 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+        .job {
+            margin-bottom: 15px;
+        }
+        .job-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .date {
+            float: right;
+            font-style: italic;
+        }
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .additional ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .additional li {
+            margin-bottom: 8px;
+        }
+        .additional strong {
+            display: inline-block;
+            width: 150px;
+        }
+        .publication {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-left: 3px solid #007bff;
+            background-color: #f8f9fa;
+        }
+        .publication-title {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #0056b3;
+        }
+        .publication-authors {
+            font-style: italic;
+            margin-bottom: 5px;
+        }
+        .publication-conference {
+            margin-bottom: 5px;
+        }
+        .publication-doi {
+            font-size: 14px;
+            color: #666;
+        }
+        @media print {
+            body {
+                margin: 0;
+            }
+            .photo {
+                border: none;
+            }
+            .publication {
+                border-left: 2px solid #007bff;
+                background-color: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img class="photo" src="emon.png" alt="Abu Bakkar Siddique Emon">
+        <div class="contact">
+            <h1>ABU BAKKAR SIDDIQUE EMON</h1>
+            <p>Address: Gazipur, Bangladesh</p>
+            <p>Phone: +8801518979969</p>
+            <p>Email: abubakkar0001@std.bdu.ac.bd</p>
+            <p>Website: abs-emon.github.io</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>SUMMARY</h2>
+        <p>Innovative IoT, Robotics, AI/ML, and Aerospace Engineer and Researcher with deep expertise in embedded systems, autonomous UAV development, and IoT-based intelligent systems. Skilled in Python (TensorFlow, OpenCV, NumPy, Pandas, and package development ‘emon’), C++, Java, Unity, ROS2 (Gazebo, RViz2), PX4, and MQTT for simulation, automation, and autonomous control. Experienced with hardware platforms including Arduino, ESP32, Raspberry Pi, and Pixhawk, along with full-stack tools such as Flutter and Laravel.Research interests include Edge AI for UAVs, Autonomous Flight Control, IoT-Enabled Aerospace Systems, Wearable Health Intelligence, and Extended Reality (XR) for immersive robotics training. Passionate about advancing intelligent, resource-efficient, and autonomous systems that bridge AI, robotics, and aerospace innovation.</p>
+    </div>
+
+    <div class="section">
+        <h2>WORK EXPERIENCE</h2>
+        <div class="job">
+            <div class="job-title">IoT and Robotics Engineer, Aerobotics Project, UFTB <span class="date">Sep 2025 - Present</span></div>
+            <ul>
+                <li>Developed "Aerobotics," a low-cost IoT-based real-time telemetry and risk prediction system for RC aircraft using ESP32, NEO-6M GPS, and Machine Learning (Random Forest classifier achieving 99.93% accuracy).</li>
+                <li>Integrated hardware for capturing flight parameters (velocity, altitude, position) and transmitting to ThingSpeak cloud; created Flutter app for visualization and risk assessment.</li>
+                <li>Published research paper on the system at ICCIT 2025.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">SU-27 RC Jet Development and Operator, UFTB <span class="date">Aug 2024 - Jun 2025</span></div>
+            <ul>
+                <li>Manually built, assembled, and tuned a lightweight RC SU-27 jet with IoT telemetry integration.</li>
+                <li>Conducted test flights, integrated Pixhawk and Mission Planner for flight stabilization and telemetry.</li>
+                <li>Applied expertise in Arduino, ESP32, and ROS2 for enhanced control and data monitoring.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Quadcopter Development & Operator, UFTB <span class="date">Aug 2024 - Jun 2025</span></div>
+            <ul>
+                <li>Designed and built a GPS-enabled quadcopter from scratch with responsive flight control, using brushless motors, ESCs, and Pixhawk.</li>
+                <li>Integrated sensors, performed PID tuning, and enabled autonomous modes like return-to-home using ROS2 Humble, Gazebo simulations, and PX4 Autonomous on Ubuntu.</li>
+                <li>Tested in real-world scenarios for stability and navigation accuracy.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">IoT-Based Wearable Health Monitoring System Developer, UFTB <span class="date">May 2025 - Present</span></div>
+            <ul>
+                <li>Built an ESP32-based wearable system for remote monitoring of heart rate and temperature, with data visualization on Firebase dashboard and ML predictions.</li>
+                <li>Utilized DHT11 and AD8232 sensors, integrated with Flask server for stacked ML ensemble (XGBoost, Random Forest, CatBoost) achieving 84.65% accuracy.</li>
+                <li>Deployed edge-cloud hybrid architecture for real-time alerts and health condition classification.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Unity & VR Game Development, UFTB / TGG Organization <span class="date">Apr 2025 - May 2025</span></div>
+            <ul>
+                <li>Developed and published a 3D Car Racing Game, 2D Role-based Access Game, and XR Drone Simulator using Unity and C#.</li>
+                <li>Built immersive simulations demonstrating game physics, object-oriented programming (OOP) principles, and interactive XR training.</li>
+                <li>Released WebGL games and published the XR drone simulator on Itch.io.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Laravel & AI ChatBot Development (Japanese AI Course), TGG Organization <span class="date">Jan 2025 - May 2025</span></div>
+            <ul>
+                <li>Developed Laravel-based projects including Blog Web App, To-Do List, and AI-powered Chatbot with OpenAI API integration.</li>
+                <li>Managed backend databases (MySQL) using HeidiSQL, TablePlus, and DB Engine; tested APIs with Postman.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Python Package Developer, UFTB <span class="date">Apr 2025 - Present</span></div>
+            <ul>
+                <li>Published a Python package named emon on PyPI.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Android App Developer, Amazon Appstore <span class="date">June 2024 - Dec 2024</span></div>
+            <ul>
+                <li>Published Online Tools, Calculator, and Namata apps.</li>
+                <li>Integrated AdMob for monetization.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Web Developer, UFTB Robotics Club <span class="date">Jan 2024 - May 2024</span></div>
+            <ul>
+                <li>Designed and deployed secure, performance-optimized websites.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>PROJECTS</h2>
+        <div class="job">
+            <div class="job-title">Quadcopter Drone Development <span class="date">November 2025 - Present</span></div>
+            <ul>
+                <li>Designed a GPS-enabled quadcopter with responsive flight control.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">RC Plane GPS Telemetry System <span class="date">September 2025 - Present</span></div>
+            <ul>
+                <li>Integrated real-time GPS telemetry with RC aircraft for remote monitoring.</li>
+                <li>Visualized flight data via telemetry modules and analyzed performance.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Drone Simulator XR(Extended Reality) Project <span class="date">May 2025 - Present</span></div>
+            <ul>
+                <li>Developed an immersive XR drone simulator for training, published on Itch.io.</li>
+                <li>Designed a flight simulator replicating real-world quadcopter dynamics.</li>
+                <li>Implemented PID-tuned flight control and mission simulation environments.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">AI-Powered Chatbot Web App (Japanese AI Course) <span class="date">Mar 2025 - May 2025</span></div>
+            <ul>
+                <li>Integrated AI-powered chatbot with voice-to-text, text-to-voice, and AI image generation.</li>
+                <li>Managed backend databases using HeidiSQL, TablePlus, and DB Engine; tested APIs via Postman.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Laravel To-Do List Web App <span class="date">Feb 2025 - Apr 2025</span></div>
+            <ul>
+                <li>Created a task management app with CRUD operations and responsive UI using Tailwind CSS.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Laravel Blog Web App <span class="date">Jan 2025 - Mar 2025</span></div>
+            <ul>
+                <li>Developed a blogging platform with full CRUD functionality, user authentication, and responsive design.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">2D Game with Role-based Access <span class="date">Apr 2025 - May 2025</span></div>
+            <ul>
+                <li>Implemented role-based access using polymorphism to demonstrate OOP concepts.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">IoT Health Monitoring System <span class="date">May 2025 - Present</span></div>
+            <ul>
+                <li>Built an ESP32-based system to monitor heart rate and temperature remotely.</li>
+                <li>Visualized real-time data in Firebase dashboard and triggered alerts.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">3D Car Racing Game <span class="date">May 2025 - Present</span></div>
+            <ul>
+                <li>Custom vehicle dynamics, terrain, camera, and controls.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Sign Language Detection <span class="date">Jan 2025 - Present</span></div>
+            <ul>
+                <li>Implemented ASL sign detection system using ML and OpenCV.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">School Management System <span class="date">Aug 2024 - Dec 2024</span></div>
+            <ul>
+                <li>Full-stack web app for school operations.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Student Expense Tracker App <span class="date">October 2025 - Present</span></div>
+            <ul>
+                <li>A Flutter-based Android app with a PHP backend and MySql Database for students' expense tracking.</li>
+            </ul>
+        </div>
+        <div class="job">
+            <div class="job-title">Online Store <span class="date">Jan 2025 - Present</span></div>
+            <ul>
+                <li>Customized Amazon-style e-commerce with Blogger and JS.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>EDUCATION</h2>
+        <div class="job">
+            <div class="job-title">University of Frontier Technology, Bangladesh</div>
+            <p>B.Sc. in IoT and Robotics Engineering <span class="date">Aug 2023 - May 2027 (Expected)</span></p>
+        </div>
+        <div class="job">
+            <div class="job-title">Nasirabad College, Mymensingh</div>
+            <p>H.S.C. (Science), GPA 5.00 <span class="date">Aug 2020 - Feb 2022</span></p>
+        </div>
+        <div class="job">
+            <div class="job-title">Monsurpur A.H.T High School, Netrokona</div>
+            <p>S.S.C. (Science), GPA 5.00 <span class="date">Jan 2018 - Feb 2020</span></p>
+        </div>
+    </div>
+
+    <!-- NEW PUBLICATION SECTION -->
+    <div class="section">
+        <h2>PUBLICATIONS</h2>
+        <div class="publication">
+            <div class="publication-title">Aerobotics: A Low-Cost IoT-Based Real-Time Telemetry and Risk Prediction System for RC Aircraft Using ESP32 and Machine Learning</div>
+            <div class="publication-authors">A. B. S. Emon, S. C. Das, A. Hasib, Md. Ashigussalehin</div>
+            <div class="publication-conference">2025 28th International Conference on Computer and Information Technology (ICCIT), Cox's Bazar, Bangladesh</div>
+            <div class="publication-doi"><strong>DOI:</strong> 10.1109/ICCIT63776.2025.10546980</div>
+            <div class="publication-doi"><strong>ISBN:</strong> 979-8-3315-7867-1</div>
+            <div class="publication-doi"><strong>Pages:</strong> 1-6</div>
+        </div>
+    </div>
+
+    <div class="section additional">
+        <h2>ADDITIONAL INFORMATION</h2>
+        <ul>
+            <li><strong>Technical Skills:</strong> Languages: Python, C, C++, Java, PHP, SQL, C#, Dart; ML Frameworks: NumPy, Pandas, MatPlotlib, TensorFlow, Scikit-learn; App: Java, Flutter, Kotlin, Android Studio; Web: HTML, CSS, JavaScript, FastAPI, PHP, Laravel, MySQL, WordPress; Tools: VS Code, PyCharm, Unity, Arduino, ESP32, Pixhawk, raspberry pi, Mission Planner; Others: ROS2 (rviz2, Gazebo), OpenCV, Git, Blender, Cisco Packet Tracer</li>
+            <li><strong>Training:</strong> AI for Immersive Technology (BDSET), Japanese AI Course (TGG Organization), Japanese VR Course (TGG Organization), Web Development Training (UYLab)</li>
+            <li><strong>Leadership & Activities:</strong> Project and Workshop Secretary, UFTB Robotics Club; Olympiad Coordinator, UFTB Math Squad Club</li>
+            <li><strong>Awards and Scholarships:</strong> Shaheed Syed Nazrul Islam Scholarship for HSC (2023); 15th National Undergraduate Math Olympiad Finalist (2024); Student Robot Development Fund 2025 (Robo Tech Valley)</li>
+            <li><strong>Certifications:</strong> Python Basics, NASA Space App Challenge, Robotics Course, Machine Learning, AWS ML, Soft Skills, VS Code Udemy Certificate, Hackerrank Problem Solving, ML Specialty, AI Concepts Microsoft, Excel for Workplace, WordPress Theme UYLab, Math Olympiad Participation, Math Olympiad Achievement</li>
+        </ul>
+    </div>
+</body>
+</html>
