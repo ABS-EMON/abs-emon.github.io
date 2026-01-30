@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Llama 3.2 Vision Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        #chat-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        #chat-history {
+            height: 420px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .message {
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            line-height: 1.4;
+        }
+        .user {
+            background-color: #d1e7dd;
+            text-align: right;
+            margin-left: 20%;
+        }
+        .assistant {
+            background-color: #e2e3e5;
+            text-align: left;
+            margin-right: 20%;
+        }
+        #input-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        select, input[type="text"], input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+        #send-btn {
+            padding: 12px;
+            background: #0d6efd;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #send-btn:hover {
+            background: #0b5ed7;
+        }
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .control-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        #clear-btn {
+            background: #dc3545;
+            color: white;
+        }
+        #clear-btn:hover {
+            background: #c82333;
+        }
+        #stop-btn {
+            background: #6c757d;
+            color: white;
+        }
+        #stop-btn:hover {
+            background: #5c636a;
+        }
+        .info-text {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-container">
+    <h2>ABS EMON-🦙 Llama 3.2 Vision Chat</h2>
+    <div id="chat-history"></div>
+
+    <form id="input-form">
+        <select id="mode-select">
+            <option value="text">Text Conversation</option>
+            <option value="image">Image Analysis</option>
+            <option value="video">Video Analysis (direct MP4 link)</option>
+        </select>
+
+        <div id="image-inputs" style="display:none;">
+            <input type="text" id="image-url" placeholder="Paste direct image URL (jpg/png/webp)">
+            <input type="file" id="image-file" accept="image/jpeg,image/png,image/webp">
+            <div class="info-text">Provide URL OR upload a file (not both at once)</div>
+        </div>
+
+        <div id="video-inputs" style="display:none;">
+            <input type="text" id="video-url" placeholder="Direct video URL (must be .mp4)">
+            <div class="info-text">Example: https://.../video.mp4 (YouTube links usually won't work directly)</div>
+        </div>
+
+        <input type="text" id="user-input" placeholder="Your prompt / question..." autocomplete="off">
+
+        <button type="submit" id="send-btn">Send</button>
+    </form>
+
+    <div class="control-buttons">
+        <button id="clear-btn" class="control-btn">Clear Conversation</button>
+        <button id="stop-btn" class="control-btn">Stop / Reset Chat</button>
+    </div>
+</div>
+
+<script>
+    // ────────────────────────────────────────────────
+    //  CHANGE THIS EVERY TIME YOU RESTART THE COLAB CELL
+    // ────────────────────────────────────────────────
+    const apiUrl = 'https://d415f9b1de40.ngrok-free.app';   // ← Paste your latest ngrok URL here
+
+    const chatHistory   = document.getElementById('chat-history');
+    const modeSelect    = document.getElementById('mode-select');
+    const imageUrlInput = document.getElementById('image-url');
+    const imageFileInput= document.getElementById('image-file');
+    const videoUrlInput = document.getElementById('video-url');
+    const userInput     = document.getElementById('user-input');
+    const inputForm     = document.getElementById('input-form');
+    const clearBtn      = document.getElementById('clear-btn');
+    const stopBtn       = document.getElementById('stop-btn');
+
+    const imageInputs   = document.getElementById('image-inputs');
+    const videoInputs   = document.getElementById('video-inputs');
+
+    let currentImageBase64 = '';
+
+    // ─── Mode change ────────────────────────────────────────
+    modeSelect.addEventListener('change', () => {
+        const mode = modeSelect.value;
+
+        imageInputs.style.display = (mode === 'image') ? 'block' : 'none';
+        videoInputs.style.display = (mode === 'video') ? 'block' : 'none';
+
+        // Optional: clear previous media inputs when changing mode
+        imageUrlInput.value = '';
+        imageFileInput.value = '';
+        videoUrlInput.value = '';
+        currentImageBase64 = '';
+    });
+
+    // ─── File upload → base64 ───────────────────────────────
+    imageFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('Please select a valid image file (jpg, png, webp)');
+            imageFileInput.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            currentImageBase64 = ev.target.result;
+            addMessage('system', 'Image file loaded successfully. You can now send.');
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // ─── Add message to chat ────────────────────────────────
+    function addMessage(role, text) {
+        const div = document.createElement('div');
+        div.className = `message ${role}`;
+        div.textContent = text;
+        chatHistory.appendChild(div);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    // ─── Form submit ────────────────────────────────────────
+    inputForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const mode = modeSelect.value;
+        let prompt = userInput.value.trim();
+
+        // Client-side validation
+        if (!prompt && mode === 'text') {
+            addMessage('system', 'Please type a message.');
+            return;
+        }
+
+        if (mode === 'image' && !imageUrlInput.value.trim() && !currentImageBase64) {
+            addMessage('system', 'Image mode: please provide an image URL or upload a file.');
+            return;
+        }
+
+        if (mode === 'video' && !videoUrlInput.value.trim()) {
+            addMessage('system', 'Video mode: please paste a direct .mp4 video URL.');
+            return;
+        }
+
+        // Show what user sent
+        let displayText = prompt || '(no text prompt)';
+        if (mode === 'image') displayText = `[Image] ${displayText}`;
+        if (mode === 'video') displayText = `[Video] ${displayText}`;
+        addMessage('user', displayText);
+
+        // Clear inputs
+        userInput.value = '';
+        const payload = { mode, prompt: prompt || 'Describe this.' };
+
+        if (mode === 'image') {
+            if (imageUrlInput.value.trim()) {
+                payload.image_url = imageUrlInput.value.trim();
+            }
+            if (currentImageBase64) {
+                payload.image_base64 = currentImageBase64;
+            }
+        } else if (mode === 'video') {
+            payload.video_url = videoUrlInput.value.trim();
+        }
+
+        // Reset media fields
+        imageUrlInput.value = '';
+        imageFileInput.value = '';
+        videoUrlInput.value = '';
+        currentImageBase64 = '';
+
+        try {
+            const res = await fetch(`${apiUrl}/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                if (data.response) {
+                    addMessage('assistant', data.response);
+                } else if (data.message) {
+                    addMessage('assistant', data.message);
+                } else {
+                    addMessage('assistant', '(empty response)');
+                }
+            } else {
+                addMessage('assistant', `Error ${res.status}: ${data.error || 'Unknown server error'}`);
+            }
+        } catch (err) {
+            console.error(err);
+            addMessage('assistant', `Connection failed: ${err.message}`);
+        }
+    });
+
+    // ─── Clear conversation ─────────────────────────────────
+    clearBtn.addEventListener('click', async () => {
+        if (!confirm('Clear the entire conversation?')) return;
+
+        try {
+            await fetch(`${apiUrl}/clear`, { method: 'POST' });
+            chatHistory.innerHTML = '';
+            addMessage('system', 'Conversation cleared ✓');
+        } catch (err) {
+            addMessage('system', 'Could not clear server side: ' + err.message);
+        }
+    });
+
+    // ─── Stop / Reset (client-side only) ────────────────────
+    stopBtn.addEventListener('click', () => {
+        chatHistory.innerHTML = '';
+        addMessage('system', 'Chat reset. You can start again.');
+    });
+
+    // Initialize
+    modeSelect.dispatchEvent(new Event('change'));
+    addMessage('system', 'Ready. Choose mode and start chatting.');
+</script>
+</body>
+</html>
