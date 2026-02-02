@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Drone Dataset Viewer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --secondary: #06b6d4;
+  --accent: #f59e0b;
+  --bg: #ffffff;
+  --bg-light: #f8fafc;
+  --card: #ffffff;
+  --text: #1f2937;
+  --text-secondary: #6b7280;
+  --border: #e5e7eb;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+/* Splash Screen */
+#splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.8s ease;
+}
+.splash-logo {
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  animation: pulse 2s infinite;
+}
+.splash-logo i {
+  font-size: 60px;
+  color: white;
+}
+.splash-text {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.splash-subtext {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  max-width: 300px;
+}
+.splash-loader {
+  width: 80px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  margin-top: 40px;
+  overflow: hidden;
+}
+.splash-progress {
+  height: 100%;
+  width: 0%;
+  background: white;
+  border-radius: 2px;
+  transition: width 2s ease;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 20px;
+  border-radius: 0 0 24px 24px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-title h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+.header-title i {
+  font-size: 24px;
+}
+.header-subtitle {
+  margin-top: 5px;
+  font-size: 14px;
+  opacity: 0.9;
+}
+/* Live Scrolling Text */
+.live-scroll-container {
+  overflow: hidden;
+  width: 200px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  position: relative;
+}
+.live-badge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #ef4444;
+  color: white;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 50px;
+  z-index: 2;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.scrolling-text {
+  position: absolute;
+  white-space: nowrap;
+  animation: scrollText 15s linear infinite;
+  color: white;
+  font-size: 13px;
+  line-height: 32px;
+  padding-left: 75px;
+}
+@keyframes scrollText {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+/* Stats */
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 16px;
+  gap: 12px;
+  background: var(--bg-light);
+  margin-bottom: 10px;
+}
+.stat-card {
+  flex: 1;
+  background: white;
+  padding: 16px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--border);
+}
+.stat-card:nth-child(1) {
+  border-top: 4px solid var(--primary);
+}
+.stat-card:nth-child(2) {
+  border-top: 4px solid var(--accent);
+}
+.stat-card:nth-child(3) {
+  border-top: 4px solid #10b981;
+}
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: var(--text);
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+/* CONTAINER */
+.container {
+  padding: 16px;
+  max-width: 900px;
+  margin: auto;
+  padding-bottom: 100px; /* Increased to prevent footer overlap */
+}
+/* CARD */
+.card {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid var(--border);
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+}
+/* IMAGE */
+.card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.card:hover img {
+  transform: scale(1.03);
+}
+/* CARD CONTENT */
+.card-content {
+  padding: 18px 20px;
+}
+.card-content h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+}
+.card-content p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-line;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+/* ACTIONS */
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+.btn-view {
+  background: var(--primary);
+  color: white;
+}
+.btn-view:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+.btn-info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.btn-info:hover {
+  background: #bae6fd;
+  transform: translateY(-2px);
+}
+.btn-favorite {
+  width: 46px;
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+.btn-favorite:hover {
+  background: #fcd34d;
+  color: #92400e;
+}
+.btn-favorite.active {
+  background: #fcd34d;
+  color: #92400e;
+}
+/* FOOTER */
+.footer {
+  background: var(--bg-light);
+  text-align: center;
+  font-size: 13px;
+  color: #64748b;
+  padding: 20px;
+  border-top: 1px solid var(--border);
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 10;
+}
+.footer a {
+  color: var(--primary);
+  text-decoration: none;
+  margin-left: 10px;
+  font-weight: 500;
+}
+/* Loading State */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  flex-direction: column;
+  gap: 20px;
+}
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(79, 70, 229, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+/* Error State */
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+}
+.error-state i {
+  font-size: 48px;
+  color: #ef4444;
+  margin-bottom: 20px;
+}
+.error-state button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+/* Responsive */
+@media (max-width: 600px) {
+  .stats-container {
+    flex-direction: column;
+  }
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .live-scroll-container {
+    width: 100%;
+  }
+  .splash-logo {
+    width: 100px;
+    height: 100px;
+  }
+  .splash-logo i {
+    font-size: 50px;
+  }
+  .splash-text {
+    font-size: 26px;
+  }
+}
+</style>
+
+</head>
+<body>
+<!-- Splash Screen -->
+<div id="splash-screen">
+  <div class="splash-logo">
+    <i class="fa-solid fa-drone"></i>
+  </div>
+  <div class="splash-text">Drone Dataset Viewer</div>
+  <div class="splash-subtext">Loading datasets from Google Sheets...</div>
+  <div class="splash-loader">
+    <div class="splash-progress" id="splash-progress"></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-content">
+    <div>
+      <div class="header-title">
+        <i class="fa-solid fa-drone"></i>
+        <h1>Drone Dataset Viewer</h1>
+      </div>
+      <div class="header-subtitle">AI Vision Dataset • Image + Description</div>
+    </div>
+    <div class="live-scroll-container">
+      <div class="live-badge">
+        <i class="fa-solid fa-circle"></i> LIVE
+      </div>
+      <div class="scrolling-text">
+        Live Drone Image Datasets • Real-time Aerial Imagery • AI Training Data
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-container" id="stats-container">
+  <div class="stat-card">
+    <div class="stat-value" id="total-images">0</div>
+    <div class="stat-label">Total Images</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="categories">0</div>
+    <div class="stat-label">Categories</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="last-update">Now</div>
+    <div class="stat-label">Last Update</div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="container" id="list">
+  <div class="loading">
+    <div class="spinner"></div>
+    <div>Loading drone datasets...</div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  Built with ❤️ using Google Sheets + HTML
+  <a href="#" id="refresh-btn"><i class="fa-solid fa-rotate"></i> Refresh Data</a>
+</div>
+
+<script>
+const sheetId = "13Ap07VLRxJ_onZBVeCaa-tjAhpcFlX4AZYjzopqcsnc";
+const sheetName = "Sheet1";   // ← change this if your tab has a different name (e.g. "Data")
+const url = `https://opensheet.elk.sh/${sheetId}/${sheetName}`;
+
+function driveToDirect(url) {
+  if (!url) return "";
+  const idMatch = url.match(/[-\w]{25,}/);
+  return idMatch
+    ? `https://drive.google.com/thumbnail?id=${idMatch[0]}&sz=w1000`
+    : "";
+}
+
+/* Splash screen */
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("splash-progress").style.width = "100%";
+  setTimeout(() => {
+    const splash = document.getElementById("splash-screen");
+    splash.style.opacity = "0";
+    setTimeout(() => {
+      splash.style.display = "none";
+      loadData();
+    }, 800);
+  }, 2000);
+});
+
+function loadData() {
+  const list = document.getElementById("list");
+  list.innerHTML = `
+    <div class="loading">
+      <div class="spinner"></div>
+      <div>Loading drone datasets...</div>
+    </div>
+  `;
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch data from sheet");
+      return res.json();
+    })
+    .then(displayData)
+    .catch(err => {
+      list.innerHTML = `
+        <div class="error-state">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <p>Error loading data: ${err.message}</p>
+          <button onclick="loadData()">Retry</button>
+        </div>
+      `;
+      console.error(err);
+    });
+}
+
+function displayData(data) {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  document.getElementById("total-images").textContent = data.length;
+
+  const categorySet = new Set();
+
+  data.forEach((row, index) => {
+    const imgUrl = driveToDirect(row["image"] || "");
+    const desc = row["Description"] || "No description available";
+    const firstWord = desc.split(/\s+/)[0] || "Unknown";
+    categorySet.add(firstWord);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <img src="${imgUrl || 'https://via.placeholder.com/800x400?text=No+Image'}" loading="lazy" alt="Drone image">
+      <div class="card-content">
+        <h3><i class="fa-solid fa-camera-retro"></i> Image #${index + 1} • ${firstWord}</h3>
+        <p>${desc}</p>
+        <div class="actions">
+          <button class="btn btn-view" data-img="${imgUrl}">
+            <i class="fa-solid fa-image"></i> View Full
+          </button>
+          <button class="btn btn-info">
+            <i class="fa-solid fa-circle-info"></i> Details
+          </button>
+          <button class="btn btn-favorite">
+            <i class="fa-regular fa-star"></i>
+          </button>
+        </div>
+      </div>
+    `;
+
+    // Event listeners
+    card.querySelector(".btn-view").onclick = () => {
+      if (imgUrl) window.open(imgUrl, "_blank");
+    };
+
+    card.querySelector(".btn-info").onclick = () => {
+      showNotification("Drone image from your dataset – " + (row["Label Data"] || "no label"));
+    };
+
+    card.querySelector(".btn-favorite").onclick = function() {
+      toggleFavorite(this);
+    };
+
+    list.appendChild(card);
+  });
+
+  document.getElementById("categories").textContent = categorySet.size;
+}
+
+function toggleFavorite(btn) {
+  const icon = btn.querySelector("i");
+  const isActive = icon.classList.contains("fa-solid");
+  icon.className = isActive ? "fa-regular fa-star" : "fa-solid fa-star";
+  btn.classList.toggle("active", !isActive);
+  showNotification(isActive ? "Removed from favorites" : "Added to favorites");
+}
+
+function showNotification(msg) {
+  const note = document.createElement("div");
+  note.textContent = msg;
+  note.style.cssText = `
+    position:fixed;top:20px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,#4f46e5,#06b6d4);
+    color:white;padding:12px 24px;
+    border-radius:10px;
+    box-shadow:0 10px 25px rgba(0,0,0,.2);
+    z-index:9999;
+    font-size:14px;
+  `;
+  document.body.appendChild(note);
+  setTimeout(() => note.remove(), 3000);
+}
+
+/* Refresh */
+document.getElementById("refresh-btn").onclick = (e) => {
+  e.preventDefault();
+  document.getElementById("last-update").textContent = new Date().toLocaleTimeString();
+  loadData();
+};
+
+document.getElementById("last-update").textContent = new Date().toLocaleTimeString();
+</script>
+</body>
+</html>
