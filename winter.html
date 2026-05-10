@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলাদেশের গ্রাম্য শীতের মিষ্টি | খাঁটি মধু ও খেজুরের গুড়</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Kalpurush', 'SolaimanLipi', Arial, sans-serif;
+        }
+
+        body {
+            background: #f8f4e9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* টপ স্ক্রলিং বার */
+        .top-bar {
+            background: #d35400;
+            color: white;
+            padding: 8px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .scroll-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: scroll 25s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* হিরো সেকশন */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url('1.jpg') no-repeat center center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            padding: 20px;
+            animation: fadeIn 2s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .hero p {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #e67e22;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn:hover {
+            background: #d35400;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+
+        /* প্রোডাক্ট সেকশন */
+        .products {
+            padding: 80px 20px;
+            background: #fff;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 36px;
+            margin-bottom: 50px;
+            color: #8b4513;
+        }
+
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 40px;
+        }
+
+        .product-card {
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.4s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .product-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .product-info {
+            padding: 25px;
+        }
+
+        .product-info h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #8b4513;
+        }
+
+        .price {
+            font-size: 24px;
+            color: #e67e22;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        /* গ্যালারি সেকশন */
+        .gallery {
+            padding: 80px 20px;
+            background: #f1ece2;
+            text-align: center;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: transform 0.4s;
+        }
+
+        .gallery-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* অর্ডার ফর্ম */
+        .order {
+            padding: 80px 20px;
+            background: #fff;
+            text-align: center;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #f9f9f9;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .payment-info {
+            margin: 30px 0;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 10px;
+        }
+
+        .payment-logos {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .payment-logos img {
+            height: 50px;
+            transition: transform 0.3s;
+        }
+
+        .payment-logos img:hover {
+            transform: scale(1.2);
+        }
+
+        /* ফুটার */
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 36px; }
+            .hero p { font-size: 18px; }
+            .product-grid { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- টপ স্ক্রলিং বার -->
+    <div class="top-bar">
+        <div class="scroll-text">
+            🌿 শীতের সীমিত স্টক! খাঁটি গ্রাম্য মধু ও তাজা পাটালি গুড় – এখনই অর্ডার করুন +8801518979969 (কল/হোয়াটসঅ্যাপ) 🌿
+        </div>
+    </div>
+
+    <!-- হিরো সেকশন -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>বাংলাদেশের গ্রাম্য শীতের মিষ্টি স্বাদ</h1>
+            <p>খাঁটি প্রাকৃতিক মধু ও তাজা খেজুরের পাটালি গুড়<br>সরাসরি গ্রামের খেজুর বাগান থেকে আপনার ঘরে</p>
+            <a href="#order" class="btn">এখনই অর্ডার করুন</a>
+        </div>
+    </section>
+
+    <!-- প্রোডাক্ট সেকশন -->
+    <section class="products">
+        <h2 class="section-title">আমাদের পণ্য</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <img src="10.jpg" alt="খাঁটি মধু">
+                <div class="product-info">
+                    <h3>খাঁটি প্রাকৃতিক মধু</h3>
+                    <p>সুন্দরবন ও গ্রাম্য ফুলের খাঁটি মধু। কোনো মিশ্রণ নেই।</p>
+                    <div class="price">১ কেজি – ৮০০ টাকা<br>৫০০ গ্রাম – ৪৫০ টাকা</div>
+                </div>
+            </div>
+
+           
+          
+           <div class="product-grid">
+            <div class="product-card">
+                <img src="15.jpg" alt="খাঁটি মধু">
+                <div class="product-info">
+                    <h3>খাঁটি প্রাকৃতিক মধু</h3>
+                    <p>সুন্দরবন ও গ্রাম্য ফুলের খাঁটি মধু। কোনো মিশ্রণ নেই।</p>
+                    <div class="price">১ কেজি – ৮০০ টাকা<br>৫০০ গ্রাম – ৪৫০ টাকা</div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="6.jpg" alt="খেজুরের গুড়">
+                <div class="product-info">
+                    <h3>তাজা খেজুরের পাটালি গুড়</h3>
+                    <p>ঐতিহ্যবাহী পদ্ধতিতে তৈরি। শীতের সেরা স্বাদ।</p>
+                    <div class="price">১ কেজি – ৬০০ টাকা<br>৫০০ গ্রাম – ৩৫০ টাকা</div>
+                </div>
+            </div>
+
+
+            <div class="product-card">
+                <img src="8.jpg" alt="খেজুরের গুড়">
+                <div class="product-info">
+                    <h3>তাজা খেজুরের পাটালি গুড়</h3>
+                    <p>ঐতিহ্যবাহী পদ্ধতিতে তৈরি। শীতের সেরা স্বাদ।</p>
+                    <div class="price">১ কেজি – ৬০০ টাকা<br>৫০০ গ্রাম – ৩৫০ টাকা</div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <img src="6.jpg" alt="খেজুরের গুড়">
+                <div class="product-info">
+                    <h3>তাজা খেজুরের পাটালি গুড়</h3>
+                    <p>ঐতিহ্যবাহী পদ্ধতিতে তৈরি। শীতের সেরা স্বাদ।</p>
+                    <div class="price">১ কেজি – ৬০০ টাকা<br>৫০০ গ্রাম – ৩৫০ টাকা</div>
+                </div>
+            </div>
+
+
+            <div class="product-card">
+                <img src="8.jpg" alt="খেজুরের গুড়">
+                <div class="product-info">
+                    <h3>তাজা খেজুরের পাটালি গুড়</h3>
+                    <p>ঐতিহ্যবাহী পদ্ধতিতে তৈরি। শীতের সেরা স্বাদ।</p>
+                    <div class="price">১ কেজি – ৬০০ টাকা<br>৫০০ গ্রাম – ৩৫০ টাকা</div>
+                </div>
+            </div>
+          
+            <div class="product-card">
+                <img src="16.jpg" alt="খেজুরের গুড়">
+                <div class="product-info">
+                    <h3>তাজা খেজুরের পাটালি গুড়</h3>
+                    <p>ঐতিহ্যবাহী পদ্ধতিতে তৈরি। শীতের সেরা স্বাদ।</p>
+                    <div class="price">১ কেজি – ৬০০ টাকা<br>৫০০ গ্রাম – ৩৫০ টাকা</div>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <!-- গ্যালারি সেকশন -->
+    <section class="gallery">
+        <h2 class="section-title">আমাদের গ্রাম্য উৎস</h2>
+        <div class="gallery-grid">
+            <img src="1.jpg" alt="খেজুর গাছ" class="gallery-img">
+            <img src="2.jpg" alt="রস সংগ্রহ" class="gallery-img">
+            <img src="14.jpg" alt="শীতের গ্রাম" class="gallery-img">
+            <img src="9.jpg" alt="মধু সংগ্রহ" class="gallery-img">
+            <img src="7.jpg" alt="রস সংগ্রহ" class="gallery-img">
+            <img src="4.jpg" alt="শীতের গ্রাম" class="gallery-img">
+        </div>
+        <p style="margin-top: 40px; font-size: 18px;">সরাসরি গ্রাম থেকে সংগ্রহ – কোনো কেমিক্যাল বা চিনি মেশানো হয় না</p>
+    </section>
+
+    <!-- অর্ডার ফর্ম সেকশন -->
+    <section class="order" id="order">
+        <h2 class="section-title">অর্ডার করুন</h2>
+        <div class="form-container">
+            <form>
+                <input type="text" placeholder="আপনার নাম" required>
+                <input type="tel" placeholder="মোবাইল নম্বর" required>
+                <textarea rows="4" placeholder="ডেলিভারির ঠিকানা" required></textarea>
+                <select required>
+                    <option value="">পণ্য নির্বাচন করুন</option>
+                    <option>খাঁটি মধু - ১ কেজি (৮০০ টাকা)</option>
+                    <option>খাঁটি মধু - ৫০০ গ্রাম (৪৫০ টাকা)</option>
+                    <option>পাটালি গুড় - ১ কেজি (৬০০ টাকা)</option>
+                    <option>পাটালি গুড় - ৫০০ গ্রাম (৩৫০ টাকা)</option>
+                </select>
+                <input type="number" placeholder="পরিমাণ" min="1" value="1" required>
+                <textarea rows="3" placeholder="অতিরিক্ত মেসেজ (যদি থাকে)"></textarea>
+                <button type="submit" class="btn">অর্ডার কনফার্ম করুন</button>
+            </form>
+
+            <div class="payment-info">
+                <h3>পেমেন্ট পদ্ধতি</h3>
+                <p>অর্ডার কনফার্ম হলে নিচের নম্বরে bKash / Nagad / Rocket (পার্সোনাল) এ পেমেন্ট করুন।<br>ট্রানজাকশন আইডি হোয়াটসঅ্যাপে জানান।</p>
+                <p style="font-size: 24px; font-weight: bold; margin: 20px 0;">📞 +8801518979969</p>
+
+                <div class="payment-logos">
+                    <img src="12.jpg" alt="bKash">
+                    <img src="13.jpg" alt="Nagad">
+                    <img src="12.jpg" alt="Rocket">
+                </div>
+
+                <p>ডেলিভারি: সারা বাংলাদেশে (ঢাকায় ১-২ দিন, বাইরে ৩-৪ দিন)</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ফুটার -->
+    <footer>
+        <p style="font-size: 20px;">খাঁটি গ্রাম্য শীতের স্বাদ উপভোগ করুন!</p>
+        <p>যোগাযোগ: +8801518979969 (কল / হোয়াটসঅ্যাপ)</p>
+        <p>&copy; 2025 গ্রাম্য শীতের মিষ্টি। সর্বস্বত্ব সংরক্ষিত।</p>
+    </footer>
+
+    <script>
+        // ফর্ম সাবমিট হ্যান্ডেল (ডেমো – আসলে আপনি PHP বা অন্য ব্যাকএন্ড লাগবে)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('আপনার অর্ডার গ্রহণ করা হয়েছে! দয়া করে +8801518979969 নম্বরে হোয়াটসঅ্যাপে যোগাযোগ করুন এবং পেমেন্ট করুন।');
+        });
+    </script>
+</body>
+</html>
