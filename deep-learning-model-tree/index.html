@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deep Learning Model Tree</title>
+
+    <!-- PWA: manifest + theme -->
+    <link rel="manifest" href="./manifest.json" />
+    <meta name="theme-color" content="#0a0e27" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="DL Models" />
+    <link rel="icon" href="./icon-192.png" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #0d1b2a 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .container {
+            max-width: 1700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.6rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #f7971e, #ffd200, #43e97b, #4facfe, #f5576c, #f7971e);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 6s linear infinite;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #8892b0;
+            font-size: 1rem;
+            margin-bottom: 26px;
+            letter-spacing: 3px;
+        }
+
+        /* Search bar */
+        .search-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 22px;
+        }
+
+        .search-box {
+            position: relative;
+            width: 100%;
+            max-width: 460px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 42px 12px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            backdrop-filter: blur(6px);
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: #ffd200;
+            box-shadow: 0 0 25px rgba(255, 210, 0, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .search-box input::placeholder {
+            color: #6b7794;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8892b0;
+            pointer-events: none;
+            font-size: 1rem;
+        }
+
+        .search-status {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #ffd200;
+            min-height: 20px;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 0 0 34px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #8892b0;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .legend-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        /* Tree wrapper holds SVG connector overlay + nodes */
+        .tree-container {
+            display: flex;
+            justify-content: center;
+            padding: 10px 0 40px;
+            overflow-x: auto;
+        }
+
+        .tree-wrapper {
+            position: relative;
+            min-width: 1200px;
+            width: 100%;
+        }
+
+        #connectorSvg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: visible;
+        }
+
+        .tree {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Root Node */
+        .root-node {
+            padding: 18px 44px;
+            background: linear-gradient(135deg, #f7971e, #ffd200);
+            background-size: 200% 200%;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0a0e27;
+            box-shadow: 0 0 30px rgba(255, 210, 0, 0.4);
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+            position: relative;
+            margin-bottom: 50px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            z-index: 2;
+            animation: rootGradient 5s ease infinite, glow 3s ease-in-out infinite;
+        }
+
+        @keyframes rootGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .root-node:hover {
+            transform: scale(1.1) rotate(-2deg);
+            box-shadow: 0 0 70px rgba(255, 210, 0, 0.9);
+        }
+
+        .root-node:active {
+            transform: scale(0.97);
+        }
+
+        /* Main Categories Row */
+        .categories {
+            display: flex;
+            gap: 34px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+        }
+
+        .category {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 210px;
+            position: relative;
+        }
+
+        .category-node {
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, filter 0.3s ease;
+            position: relative;
+            text-align: center;
+            min-width: 170px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            animation: nodeIn 0.6s ease backwards;
+        }
+
+        @keyframes nodeIn {
+            from { opacity: 0; transform: translateY(-16px) scale(0.9); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .category-node::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: currentColor;
+            transition: width 0.4s ease;
+            border-radius: 2px;
+        }
+
+        .category-node:hover::after {
+            width: 80%;
+        }
+
+        .category-node:hover {
+            transform: translateY(-8px) scale(1.06);
+            box-shadow: 0 10px 34px rgba(0, 0, 0, 0.5);
+            filter: brightness(1.12);
+        }
+
+        .category-node.open {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25), 0 10px 34px rgba(0, 0, 0, 0.5);
+        }
+
+        .category-node .arrow {
+            display: inline-block;
+            margin-left: 6px;
+            transition: transform 0.35s ease;
+            font-size: 0.8em;
+        }
+
+        .category-node.open .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Category Colors */
+        .cat-cnn { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border: 2px solid rgba(102, 126, 234, 0.5); }
+        .cat-cnn:hover { box-shadow: 0 0 45px rgba(102, 126, 234, 0.6); }
+
+        .cat-yolo { background: linear-gradient(135deg, #f093fb, #f5576c); color: #fff; border: 2px solid rgba(245, 87, 108, 0.5); }
+        .cat-yolo:hover { box-shadow: 0 0 45px rgba(245, 87, 108, 0.6); }
+
+        .cat-transformer { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #fff; border: 2px solid rgba(79, 172, 254, 0.5); }
+        .cat-transformer:hover { box-shadow: 0 0 45px rgba(79, 172, 254, 0.6); }
+
+        .cat-generative { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #0a0e27; border: 2px solid rgba(67, 233, 123, 0.5); }
+        .cat-generative:hover { box-shadow: 0 0 45px rgba(67, 233, 123, 0.6); }
+
+        .cat-rnn { background: linear-gradient(135deg, #fa709a, #fee140); color: #0a0e27; border: 2px solid rgba(250, 112, 154, 0.5); }
+        .cat-rnn:hover { box-shadow: 0 0 45px rgba(250, 112, 154, 0.6); }
+
+        .cat-hybrid { background: linear-gradient(135deg, #a18cd1, #fbc2eb); color: #0a0e27; border: 2px solid rgba(161, 140, 209, 0.5); }
+        .cat-hybrid:hover { box-shadow: 0 0 45px rgba(161, 140, 209, 0.6); }
+
+        .cat-selfsupervised { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #0a0e27; border: 2px solid rgba(252, 182, 159, 0.5); }
+        .cat-selfsupervised:hover { box-shadow: 0 0 45px rgba(252, 182, 159, 0.6); }
+
+        .cat-reinforcement { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #0a0e27; border: 2px solid rgba(168, 237, 234, 0.5); }
+        .cat-reinforcement:hover { box-shadow: 0 0 45px rgba(168, 237, 234, 0.6); }
+
+        /* Sub-category container (the expanded panel below a category) */
+        .sub-categories {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 24px;
+            padding: 0 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+            position: relative;
+            min-width: 280px;
+            max-width: 340px;
+            transition: max-height 0.5s ease, opacity 0.4s ease, padding 0.4s ease;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .sub-categories.active {
+            opacity: 1;
+            max-height: 2400px;
+            padding: 16px;
+        }
+
+        .sub-category-block {
+            width: 100%;
+        }
+
+        .sub-label {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #ccd6f6;
+            margin-bottom: 6px;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            transition: all 0.3s ease;
+        }
+
+        .sub-label:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        .sub-label .sub-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.75em;
+            opacity: 0.7;
+        }
+
+        .sub-label.open .sub-arrow {
+            transform: rotate(90deg);
+        }
+
+        /* Model variants */
+        .model-variants {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-start;
+            margin-top: 6px;
+            margin-bottom: 4px;
+            padding: 0 4px;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.4s ease;
+        }
+
+        .model-variants.active {
+            opacity: 1;
+            max-height: 900px;
+            padding: 6px 4px 2px;
+        }
+
+        .model-tag {
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #8892b0;
+            cursor: default;
+            letter-spacing: 0.3px;
+            opacity: 0;
+            transform: translateY(6px);
+            animation: tagIn 0.4s ease forwards;
+            transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        @keyframes tagIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .model-tag:hover {
+            background: rgba(255, 255, 255, 0.18);
+            color: #fff;
+            transform: scale(1.08) translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .model-tag.highlight {
+            background: rgba(255, 210, 0, 0.15);
+            border-color: rgba(255, 210, 0, 0.35);
+            color: #ffd200;
+        }
+
+        .model-tag.highlight:hover {
+            background: rgba(255, 210, 0, 0.3);
+            box-shadow: 0 0 20px rgba(255, 210, 0, 0.4);
+        }
+
+        /* Search match highlight */
+        .model-tag.search-match {
+            background: rgba(67, 233, 123, 0.22);
+            border-color: rgba(67, 233, 123, 0.5);
+            color: #7dffb0;
+            box-shadow: 0 0 14px rgba(67, 233, 123, 0.35);
+        }
+
+        .model-tag.search-dim {
+            opacity: 0.18;
+        }
+
+        .category.search-hidden,
+        .sub-category-block.search-hidden {
+            display: none;
+        }
+
+        .category-node.search-match-node {
+            box-shadow: 0 0 0 3px rgba(67, 233, 123, 0.6), 0 10px 34px rgba(0,0,0,0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .root-node { font-size: 1.15rem; padding: 12px 24px; }
+            .category-node { font-size: 0.9rem; padding: 10px 16px; min-width: 130px; }
+            .categories { gap: 18px; }
+            .sub-categories { min-width: 220px; max-width: 260px; }
+            .model-tag { font-size: 0.62rem; padding: 4px 9px; }
+            h1 { font-size: 1.7rem; }
+            .subtitle { font-size: 0.75rem; }
+        }
+
+        @media (max-width: 480px) {
+            .tree-wrapper { min-width: 100%; }
+            .categories { flex-direction: column; align-items: center; }
+            .category { width: 100%; max-width: 320px; }
+            .sub-categories { width: 100%; max-width: 100%; }
+            .root-node { font-size: 1rem; padding: 10px 20px; }
+            #connectorSvg { display: none; }
+        }
+
+        /* Node pulse / glow */
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(255, 210, 0, 0.2)); }
+            50% { filter: drop-shadow(0 0 30px rgba(255, 210, 0, 0.6)); }
+        }
+
+        /* Floating particles */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float-particle linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes float-particle {
+            0% { transform: translateY(110vh) translateX(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) translateX(30px) rotate(720deg); opacity: 0; }
+        }
+
+        /* Reset button */
+        .reset-btn {
+            display: block;
+            margin: 0 auto 30px;
+            padding: 8px 22px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.04);
+            color: #ccd6f6;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 210, 0, 0.12);
+            border-color: rgba(255, 210, 0, 0.4);
+            color: #ffd200;
+            transform: translateY(-2px);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0e27; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, #764ba2, #667eea); }
+    </style>
+</head>
+<body>
+
+    <!-- Particles -->
+    <div id="particles"></div>
+
+    <div class="container">
+        <h1>🧠 Deep Learning Model Tree</h1>
+        <p class="subtitle">✦ Interactive Visualization of All Major Model Families ✦</p>
+
+        <div class="search-wrap">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search a model, e.g. YOLOv8, ResNet, GPT..." autocomplete="off" />
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+        <div class="search-status" id="searchStatus"></div>
+
+        <div class="legend" id="legend">
+            <div class="legend-item" data-jump="cnn"><span class="legend-color" style="background:#667eea;color:#667eea"></span> CNNs</div>
+            <div class="legend-item" data-jump="yolo"><span class="legend-color" style="background:#f5576c;color:#f5576c"></span> YOLO Family</div>
+            <div class="legend-item" data-jump="transformer"><span class="legend-color" style="background:#4facfe;color:#4facfe"></span> Transformers</div>
+            <div class="legend-item" data-jump="generative"><span class="legend-color" style="background:#43e97b;color:#43e97b"></span> Generative</div>
+            <div class="legend-item" data-jump="rnn"><span class="legend-color" style="background:#fa709a;color:#fa709a"></span> RNNs</div>
+            <div class="legend-item" data-jump="hybrid"><span class="legend-color" style="background:#a18cd1;color:#a18cd1"></span> Hybrid</div>
+            <div class="legend-item" data-jump="selfsupervised"><span class="legend-color" style="background:#fcb69f;color:#fcb69f"></span> Self-Supervised</div>
+            <div class="legend-item" data-jump="reinforcement"><span class="legend-color" style="background:#a8edea;color:#a8edea"></span> Reinforcement</div>
+        </div>
+
+        <button class="reset-btn" id="resetBtn">↺ Collapse All (or press R)</button>
+
+        <div class="tree-container">
+            <div class="tree-wrapper" id="treeWrapper">
+                <svg id="connectorSvg"></svg>
+                <div class="tree" id="tree">
+                    <div class="root-node" id="rootNode">🌟 Deep Learning Models</div>
+                    <div class="categories" id="categories"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // DATA: All Deep Learning Models
+        // ============================================
+        const modelData = [{
+            id: 'cnn', name: 'CNN', icon: '🖼️', color: 'cat-cnn',
+            subCategories: [
+                { name: 'Classic CNNs', models: ['LeNet-5', 'AlexNet', 'ZFNet', 'VGG-16', 'VGG-19', 'Inception-v1', 'Inception-v2', 'Inception-v3', 'ResNet-18', 'ResNet-34', 'ResNet-50', 'ResNet-101', 'ResNet-152', 'ResNeXt', 'DenseNet-121', 'DenseNet-169', 'DenseNet-201', 'Inception-ResNet'] },
+                { name: 'Efficient CNNs', models: ['SqueezeNet', 'MobileNet-v1', 'MobileNet-v2', 'MobileNet-v3', 'ShuffleNet-v1', 'ShuffleNet-v2', 'EfficientNet-B0', 'EfficientNet-B1', 'EfficientNet-B2', 'EfficientNet-B3', 'EfficientNet-B4', 'EfficientNet-B5', 'EfficientNet-B6', 'EfficientNet-B7', 'EfficientNetV2', 'ConvNeXt-Tiny', 'ConvNeXt-Small', 'ConvNeXt-Base', 'ConvNeXt-Large', 'RegNet', 'RepVGG', 'GhostNet'] },
+                { name: 'Segmentation', models: ['FCN', 'U-Net', 'SegNet', 'DeepLab-v1', 'DeepLab-v2', 'DeepLab-v3', 'DeepLab-v3+', 'Mask R-CNN', 'U-Net++', 'SAM'] }
+            ]
+        }, {
+            id: 'yolo', name: 'YOLO Family', icon: '🎯', color: 'cat-yolo',
+            subCategories: [
+                { name: 'YOLO Versions', models: ['YOLOv1 (2016)', 'YOLOv2 (2017)', 'YOLOv3 (2018)', 'YOLOv4 (2020)', 'YOLOv5 (2020)', 'YOLOv6 (2022)', 'YOLOv7 (2022)', 'YOLOv8 (2023)', 'YOLOv9 (2024)', 'YOLOv10 (2024)', 'YOLO11 (2024)', 'YOLO26 (2025)'] },
+                { name: 'YOLO Variants', models: ['YOLOv4-tiny', 'YOLOv5n', 'YOLOv5s', 'YOLOv5m', 'YOLOv5l', 'YOLOv5x', 'YOLOv6n', 'YOLOv6s', 'YOLOv6m', 'YOLOv6l', 'YOLOv7-tiny', 'YOLOv7x', 'YOLOv8n', 'YOLOv8s', 'YOLOv8m', 'YOLOv8l', 'YOLOv8x', 'YOLO26n', 'YOLO26s', 'YOLO26m', 'YOLO26l', 'YOLO26x'] }
+            ]
+        }, {
+            id: 'transformer', name: 'Transformers', icon: '🔮', color: 'cat-transformer',
+            subCategories: [
+                { name: 'Vision Transformers', models: ['ViT-Base', 'ViT-Large', 'ViT-Huge', 'DeiT-Tiny', 'DeiT-Small', 'DeiT-Base', 'Swin-Tiny', 'Swin-Small', 'Swin-Base', 'Swin-Large', 'PVT-Tiny', 'PVT-Small', 'PVT-Medium', 'PVT-Large', 'DETR', 'Deformable-DETR', 'DINO', 'MobileViT', 'MobileViTv2', 'FViT', 'CoAtNet'] },
+                { name: 'NLP Transformers', models: ['BERT-Base', 'BERT-Large', 'RoBERTa', 'DistilBERT', 'ALBERT', 'GPT-2', 'GPT-3', 'GPT-4', 'T5-Base', 'T5-Large', 'T5-3B', 'T5-11B', 'BART', 'XLNet', 'LLaMA-2', 'LLaMA-3', 'Mistral', 'Falcon'] },
+                { name: 'Multimodal', models: ['CLIP', 'ALIGN', 'DALL-E 2', 'DALL-E 3', 'Flamingo', 'BLIP-2', 'Stable Diffusion'] }
+            ]
+        }, {
+            id: 'generative', name: 'Generative', icon: '🎨', color: 'cat-generative',
+            subCategories: [
+                { name: 'GANs', models: ['Original GAN', 'DCGAN', 'CycleGAN', 'Pix2Pix', 'BigGAN', 'StyleGAN', 'StyleGAN2', 'StyleGAN3', 'WGAN'] },
+                { name: 'Diffusion Models', models: ['DDPM (2020)', 'DDIM (2021)', 'Stable Diffusion', 'Stable Diffusion 2', 'Stable Diffusion 3', 'Imagen', 'DALL-E 2', 'DALL-E 3', 'Midjourney'] },
+                { name: 'VAEs', models: ['Standard VAE', 'Beta-VAE', 'VQ-VAE', 'NVAE', 'IWAE'] }
+            ]
+        }, {
+            id: 'rnn', name: 'RNNs', icon: '🔄', color: 'cat-rnn',
+            subCategories: [
+                { name: 'Classic RNNs', models: ['RNN (1986)', 'LSTM (1997)', 'GRU (2014)', 'BiLSTM (2005)'] },
+                { name: 'Advanced RNNs', models: ['Seq2Seq (2014)', 'Attention (2015)', 'Transformer (2017)', 'ConvLSTM (2015)', 'WaveNet (2016)', 'Stacked LSTM', 'GRU Variants'] }
+            ]
+        }, {
+            id: 'hybrid', name: 'Hybrid Models', icon: '🧬', color: 'cat-hybrid',
+            subCategories: [
+                { name: 'CNN + RNN', models: ['ConvLSTM', 'Action Recognition', 'Video Models', 'LRCN'] },
+                { name: 'CNN + Transformer', models: ['CoAtNet', 'ViT-CNN Hybrids', 'BoTNet', 'MobileViT', 'Swin Transformer'] },
+                { name: 'GNN Models', models: ['GCN', 'GAT', 'GraphSAGE', 'GIN', 'MPNN'] }
+            ]
+        }, {
+            id: 'selfsupervised', name: 'Self-Supervised', icon: '🔄', color: 'cat-selfsupervised',
+            subCategories: [
+                { name: 'Contrastive Learning', models: ['SimCLR (2020)', 'SimCLRv2', 'MoCo-v1', 'MoCo-v2', 'MoCo-v3', 'BYOL (2020)', 'SimSiam (2021)', 'DINO (2021)', 'DINOv2 (2023)'] },
+                { name: 'Masked Autoencoders', models: ['MAE (2021)', 'BEiT (2021)', 'BERT Pre-training', 'GPT Pre-training'] }
+            ]
+        }, {
+            id: 'reinforcement', name: 'Reinforcement', icon: '🤖', color: 'cat-reinforcement',
+            subCategories: [
+                { name: 'Q-Learning', models: ['DQN (2013)', 'Double DQN (2015)', 'Dueling DQN (2016)', 'Rainbow DQN (2017)'] },
+                { name: 'Policy Gradients', models: ['PPO (2017)', 'TRPO (2015)', 'REINFORCE'] },
+                { name: 'Actor-Critic', models: ['A2C (2016)', 'A3C (2016)', 'SAC (2018)', 'TD3 (2018)', 'AlphaZero (2017)'] }
+            ]
+        }];
+
+        const CAT_ACCENTS = {
+            cnn: '#8b9dfb', yolo: '#f97fa0', transformer: '#63d6ff',
+            generative: '#5df0b0', rnn: '#fdbf9e', hybrid: '#c6b3ea',
+            selfsupervised: '#fdd3b8', reinforcement: '#bdf3ef'
+        };
+
+        const wrapper = document.getElementById('treeWrapper');
+        const svg = document.getElementById('connectorSvg');
+        const rootNode = document.getElementById('rootNode');
+        const categoriesEl = document.getElementById('categories');
+
+        // ============================================
+        // BUILD THE TREE
+        // ============================================
+        function buildTree() {
+            modelData.forEach((cat, idx) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.id = `cat-${cat.id}`;
+
+                const node = document.createElement('div');
+                node.className = `category-node ${cat.color}`;
+                node.innerHTML = `${cat.icon} ${cat.name} <span class="arrow">▾</span>`;
+                node.setAttribute('data-category', cat.id);
+                node.style.animationDelay = `${idx * 0.08}s`;
+
+                node.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const subContainer = this.nextElementSibling;
+                    const willOpen = !subContainer.classList.contains('active');
+
+                    // close all other categories
+                    document.querySelectorAll('.sub-categories').forEach(sub => {
+                        if (sub !== subContainer) {
+                            sub.classList.remove('active');
+                            sub.querySelectorAll('.model-variants').forEach(v => v.classList.remove('active'));
+                            sub.querySelectorAll('.sub-label').forEach(l => l.classList.remove('open'));
+                        }
+                    });
+                    document.querySelectorAll('.category-node').forEach(n => { if (n !== this) n.classList.remove('open'); });
+
+                    subContainer.classList.toggle('active', willOpen);
+                    this.classList.toggle('open', willOpen);
+                    requestAnimationFrame(drawConnectors);
+                    setTimeout(drawConnectors, 550);
+                });
+
+                categoryDiv.appendChild(node);
+
+                const subContainer = document.createElement('div');
+                subContainer.className = 'sub-categories';
+
+                cat.subCategories.forEach((subCat, subIdx) => {
+                    const subDiv = document.createElement('div');
+                    subDiv.className = 'sub-category-block';
+
+                    const subLabel = document.createElement('div');
+                    subLabel.className = 'sub-label';
+                    subLabel.innerHTML = `<span class="sub-arrow">▸</span> ${subCat.name}`;
+                    subDiv.appendChild(subLabel);
+
+                    const modelContainer = document.createElement('div');
+                    modelContainer.className = 'model-variants';
+                    modelContainer.id = `variants-${cat.id}-${subIdx}`;
+
+                    subLabel.addEventListener('click', function (e) {
+                        e.stopPropagation();
+                        modelContainer.classList.toggle('active');
+                        this.classList.toggle('open');
+                        setTimeout(drawConnectors, 300);
+                    });
+
+                    subCat.models.forEach((model, mIdx) => {
+                        const tag = document.createElement('span');
+                        tag.className = 'model-tag';
+                        tag.textContent = model;
+                        if (model.toLowerCase().includes('yolo')) tag.classList.add('highlight');
+                        tag.style.animationDelay = `${mIdx * 0.025}s`;
+                        modelContainer.appendChild(tag);
+                    });
+
+                    subDiv.appendChild(modelContainer);
+                    subContainer.appendChild(subDiv);
+                });
+
+                categoryDiv.appendChild(subContainer);
+                categoriesEl.appendChild(categoryDiv);
+            });
+        }
+
+        // ============================================
+        // SVG TREE CONNECTORS
+        // ============================================
+        function makePath(x1, y1, x2, y2, color) {
+            const midY = y1 + (y2 - y1) / 2;
+            const d = `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', color);
+            path.setAttribute('stroke-width', '2');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('opacity', '0.55');
+            return path;
+        }
+
+        function drawConnectors() {
+            svg.innerHTML = '';
+            const wrapRect = wrapper.getBoundingClientRect();
+            const rootRect = rootNode.getBoundingClientRect();
+            const rootX = rootRect.left + rootRect.width / 2 - wrapRect.left;
+            const rootY = rootRect.bottom - wrapRect.top;
+
+            document.querySelectorAll('.category').forEach(catDiv => {
+                const node = catDiv.querySelector('.category-node');
+                const nodeRect = node.getBoundingClientRect();
+                const nx = nodeRect.left + nodeRect.width / 2 - wrapRect.left;
+                const ny = nodeRect.top - wrapRect.top;
+                const catId = node.getAttribute('data-category');
+                svg.appendChild(makePath(rootX, rootY, nx, ny, CAT_ACCENTS[catId] || '#ffd200'));
+
+                const subContainer = catDiv.querySelector('.sub-categories');
+                if (subContainer.classList.contains('active')) {
+                    const subRect = subContainer.getBoundingClientRect();
+                    const sx = subRect.left + subRect.width / 2 - wrapRect.left;
+                    const sy = subRect.top - wrapRect.top;
+                    const ny2 = nodeRect.bottom - wrapRect.top;
+                    svg.appendChild(makePath(nx, ny2, sx, sy, CAT_ACCENTS[catId] || '#ffd200'));
+                }
+            });
+        }
+
+        // ============================================
+        // SEARCH / FILTER
+        // ============================================
+        const searchInput = document.getElementById('searchInput');
+        const searchStatus = document.getElementById('searchStatus');
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            const allTags = document.querySelectorAll('.model-tag');
+
+            if (!q) {
+                allTags.forEach(t => t.classList.remove('search-match', 'search-dim'));
+                document.querySelectorAll('.category, .sub-category-block').forEach(el => el.classList.remove('search-hidden'));
+                document.querySelectorAll('.category-node').forEach(n => n.classList.remove('search-match-node'));
+                searchStatus.textContent = '';
+                return;
+            }
+
+            let matchCount = 0;
+            document.querySelectorAll('.category').forEach(catDiv => {
+                let catHasMatch = false;
+                catDiv.querySelectorAll('.sub-category-block').forEach(subBlock => {
+                    let subHasMatch = false;
+                    subBlock.querySelectorAll('.model-tag').forEach(tag => {
+                        const isMatch = tag.textContent.toLowerCase().includes(q);
+                        tag.classList.toggle('search-match', isMatch);
+                        tag.classList.toggle('search-dim', !isMatch);
+                        if (isMatch) { subHasMatch = true; matchCount++; }
+                    });
+                    subBlock.classList.toggle('search-hidden', !subHasMatch);
+                    if (subHasMatch) {
+                        catHasMatch = true;
+                        subBlock.querySelector('.model-variants').classList.add('active');
+                        subBlock.querySelector('.sub-label').classList.add('open');
+                    }
+                });
+                catDiv.classList.toggle('search-hidden', !catHasMatch);
+                const node = catDiv.querySelector('.category-node');
+                const subContainer = catDiv.querySelector('.sub-categories');
+                node.classList.toggle('search-match-node', catHasMatch);
+                if (catHasMatch) {
+                    subContainer.classList.add('active');
+                    node.classList.add('open');
+                }
+            });
+
+            searchStatus.textContent = matchCount > 0
+                ? `${matchCount} model${matchCount === 1 ? '' : 's'} found`
+                : 'No matching models';
+
+            setTimeout(drawConnectors, 350);
+        });
+
+        // ============================================
+        // LEGEND JUMP-TO-CATEGORY
+        // ============================================
+        document.getElementById('legend').addEventListener('click', (e) => {
+            const item = e.target.closest('.legend-item');
+            if (!item) return;
+            const catId = item.getAttribute('data-jump');
+            const node = document.querySelector(`.category-node[data-category="${catId}"]`);
+            if (node) {
+                node.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+                node.click();
+            }
+        });
+
+        // ============================================
+        // RESET / COLLAPSE ALL
+        // ============================================
+        function collapseAll() {
+            document.querySelectorAll('.sub-categories').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.model-variants').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.category-node').forEach(el => el.classList.remove('open'));
+            document.querySelectorAll('.sub-label').forEach(el => el.classList.remove('open'));
+            searchInput.value = '';
+            searchInput.dispatchEvent(new Event('input'));
+            setTimeout(drawConnectors, 400);
+        }
+
+        document.getElementById('resetBtn').addEventListener('click', collapseAll);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT') return;
+            if (e.key === 'r' || e.key === 'R') collapseAll();
+            const num = parseInt(e.key);
+            if (num >= 1 && num <= 8) {
+                const cats = document.querySelectorAll('.category-node');
+                if (cats[num - 1]) cats[num - 1].click();
+            }
+        });
+
+        // ============================================
+        // PARTICLES BACKGROUND
+        // ============================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const colors = ['#f7971e', '#ffd200', '#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#a18cd1'];
+            const count = 36;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 6 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.background = color;
+                particle.style.boxShadow = `0 0 ${size * 2}px ${color}`;
+                particle.style.opacity = Math.random() * 0.35 + 0.08;
+                particle.style.animationDuration = `${Math.random() * 22 + 14}s`;
+                particle.style.animationDelay = `${Math.random() * 20}s`;
+                container.appendChild(particle);
+            }
+        }
+
+        // ============================================
+        // RESIZE / SCROLL HANDLING FOR CONNECTORS
+        // ============================================
+        window.addEventListener('resize', () => requestAnimationFrame(drawConnectors));
+        document.querySelector('.tree-container').addEventListener('scroll', () => requestAnimationFrame(drawConnectors));
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', () => {
+            buildTree();
+            createParticles();
+            drawConnectors();
+
+            setTimeout(() => {
+                const firstCat = document.querySelector('.category-node');
+                if (firstCat) firstCat.click();
+            }, 700);
+
+            console.log('🌳 Deep Learning Model Tree loaded!');
+            console.log('💡 Click a category to expand, click a sub-label to reveal models');
+            console.log('⌨️ Press 1-8 to toggle categories, R to reset, or use the search bar');
+        });
+    </script>
+
+    <!-- PWA: register service worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('✅ Service worker registered:', reg.scope))
+                    .catch((err) => console.warn('Service worker registration failed:', err));
+            });
+        }
+
+        let deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            console.log('💡 App is installable.');
+        });
+    </script>
+</body>
+</html>
