@@ -1,0 +1,91 @@
+---
+---
+
+@import "bootstrap";
+
+body {
+  padding-top: 70px;
+  text-align: justify;
+}
+
+figcaption {
+  text-align: right;
+  margin-top: -20px;
+  margin-bottom: 20px;
+}
+
+.breadcrumb {
+  background: none;
+  border: none;
+  display: block;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.nopadding-left {
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+.nopadding-right {
+  padding-right: 0 !important;
+  margin-right: 0 !important;
+}
+
+.team-member-card {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.container-fluid {
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 900px; /* or 950px */
+}
+
+/* Carousel */
+
+.carousel {
+  border-radius: 3px 3px 3px 3px;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+/* Full width (full-bleed) hero slider on the homepage.
+   Breaks the carousel out of the constrained .container-fluid
+   so it always spans the entire viewport width, regardless of
+   the max-width set on the container. */
+html, body {
+  overflow-x: hidden;
+}
+
+.full-bleed-slider {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.full-bleed-slider .carousel {
+  margin-top: 0;
+  border-radius: 0;
+}
+
+.full-bleed-slider .carousel-inner > .item > img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Justified paragraph text (body already sets this globally,
+   this reinforces it for the homepage content column) */
+.justify-text {
+  text-align: justify;
+}
+
+.justify-text p {
+  text-align: justify;
+}
