@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>3D Solar System Explorer</title>
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#000005" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Solar System" />
+<link rel="icon" href="./icon-192.png" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+
+<style>
+:root{
+  --panel-bg: rgba(8, 10, 24, 0.82);
+  --panel-border: rgba(255,255,255,0.08);
+  --accent: #ffcf6b;
+  --text-dim: #93a0c2;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{
+  height:100%;
+  overflow:hidden;
+  background:#000005;
+  font-family:'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  color:#fff;
+  touch-action:none;
+}
+#appRoot{position:fixed;inset:0;}
+canvas{display:block;outline:none;}
+
+/* ---------- Loading splash ---------- */
+#loading{
+  position:fixed;inset:0;z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  background:radial-gradient(ellipse at center, #0b1030 0%, #000005 70%);
+  transition:opacity 0.6s ease;
+}
+#loading .sun-spinner{
+  width:70px;height:70px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #fff3c0, #ffcf6b 45%, #ff9d3d 75%, #ff6a00 100%);
+  box-shadow:0 0 60px 10px rgba(255,180,60,0.55);
+  animation:pulseSun 1.6s ease-in-out infinite;
+}
+@keyframes pulseSun{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
+#loading p{color:#93a0c2;font-size:0.85rem;letter-spacing:2px;text-transform:uppercase;}
+#loading.hidden{opacity:0;pointer-events:none;}
+
+/* ---------- Top bar ---------- */
+#topBar{
+  position:fixed;top:0;left:0;right:0;z-index:20;
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;
+  background:linear-gradient(180deg, rgba(0,0,5,0.85), rgba(0,0,5,0));
+  pointer-events:none;
+}
+#topBar > *{pointer-events:auto;}
+#appTitle{
+  font-size:1rem;font-weight:700;letter-spacing:1px;white-space:nowrap;
+  background:linear-gradient(90deg,#ffcf6b,#ff9d6b,#7bb8ff,#ffcf6b);
+  background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:titleShimmer 8s linear infinite;
+}
+@keyframes titleShimmer{0%{background-position:0% center;}100%{background-position:300% center;}}
+#topBar .spacer{flex:1;}
+
+.icon-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--panel-bg);border:1px solid var(--panel-border);
+  color:#fff;font-size:1.05rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .25s ease;backdrop-filter:blur(8px);
+}
+.icon-btn:hover{background:rgba(255,207,107,0.18);border-color:rgba(255,207,107,0.4);transform:translateY(-2px);}
+.icon-btn.active{background:rgba(255,207,107,0.25);border-color:var(--accent);color:var(--accent);}
+
+/* ---------- Sidebar (planet list) ---------- */
+#sidebar{
+  position:fixed;top:64px;left:14px;bottom:110px;z-index:15;
+  width:196px;
+  background:var(--panel-bg);border:1px solid var(--panel-border);
+  border-radius:18px;backdrop-filter:blur(10px);
+  overflow-y:auto;padding:10px;
+  display:flex;flex-direction:column;gap:6px;
+  transition:transform .35s ease, opacity .35s ease;
+}
+#sidebar::-webkit-scrollbar{width:5px;}
+#sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:4px;}
+#sidebar.collapsed{transform:translateX(-230px);opacity:0;pointer-events:none;}
+
+.body-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:12px;cursor:pointer;
+  transition:all .25s ease;border:1px solid transparent;
+}
+.body-item:hover{background:rgba(255,255,255,0.06);}
+.body-item.selected{background:rgba(255,207,107,0.14);border-color:rgba(255,207,107,0.35);}
+.body-dot{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor;}
+.body-item span{font-size:0.82rem;color:#dbe2f5;letter-spacing:0.3px;}
+.body-item.selected span{color:#ffe9bd;font-weight:600;}
+.body-item small{display:block;font-size:0.65rem;color:var(--text-dim);}
+
+/* ---------- Info panel ---------- */
+#infoPanel{
+  position:fixed;top:64px;right:14px;z-index:15;
+  width:300px;max-width:calc(100vw - 28px);
+  max-height:calc(100vh - 190px);
+  background:var(--panel-bg);border:1px solid var(--panel-border);
+  border-radius:18px;backdrop-filter:blur(10px);
+  padding:16px 18px;overflow-y:auto;
+  transform:translateX(340px);opacity:0;
+  transition:transform .4s cubic-bezier(.22,1,.36,1), opacity .4s ease;
+}
+#infoPanel::-webkit-scrollbar{width:5px;}
+#infoPanel::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:4px;}
+#infoPanel.visible{transform:translateX(0);opacity:1;}
+#infoPanel h2{
+  font-size:1.25rem;margin-bottom:2px;display:flex;align-items:center;gap:8px;
+}
+#infoPanel .type-tag{
+  display:inline-block;font-size:0.65rem;letter-spacing:1px;text-transform:uppercase;
+  color:var(--accent);background:rgba(255,207,107,0.12);border:1px solid rgba(255,207,107,0.3);
+  padding:2px 8px;border-radius:10px;margin-bottom:10px;
+}
+#infoPanel .facts{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin:10px 0 12px;}
+#infoPanel .fact{background:rgba(255,255,255,0.04);border-radius:10px;padding:7px 9px;}
+#infoPanel .fact label{display:block;font-size:0.62rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}
+#infoPanel .fact div{font-size:0.82rem;font-weight:600;color:#fff;}
+#infoPanel .desc{font-size:0.8rem;line-height:1.5;color:#c7cfe8;margin-bottom:12px;}
+#infoPanel .moons-title{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin:10px 0 6px;}
+#infoPanel .moon-chip{
+  display:inline-block;font-size:0.7rem;background:rgba(123,184,255,0.12);
+  border:1px solid rgba(123,184,255,0.3);color:#bcd8ff;
+  padding:3px 9px;border-radius:10px;margin:0 5px 5px 0;
+}
+#infoPanel .close-x{
+  position:absolute;top:12px;right:14px;cursor:pointer;color:var(--text-dim);font-size:1.1rem;
+}
+#infoPanel .close-x:hover{color:#fff;}
+
+/* ---------- Bottom control bar ---------- */
+#bottomBar{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg, rgba(0,0,5,0.9), rgba(0,0,5,0));
+  display:flex;flex-direction:column;gap:10px;
+}
+#tourCaption{
+  align-self:center;
+  max-width:520px;text-align:center;
+  font-size:0.8rem;color:#ffe9bd;
+  background:rgba(255,207,107,0.1);border:1px solid rgba(255,207,107,0.3);
+  padding:6px 16px;border-radius:20px;
+  opacity:0;transform:translateY(6px);transition:all .4s ease;
+}
+#tourCaption.visible{opacity:1;transform:translateY(0);}
+
+#controlsRow{
+  display:flex;align-items:center;gap:12px;
+  background:var(--panel-bg);border:1px solid var(--panel-border);
+  border-radius:24px;backdrop-filter:blur(10px);
+  padding:8px 16px;flex-wrap:wrap;justify-content:center;
+}
+.ctrl-group{display:flex;align-items:center;gap:8px;}
+.ctrl-group label{font-size:0.68rem;color:var(--text-dim);letter-spacing:0.5px;white-space:nowrap;}
+
+#speedSlider{width:110px;accent-color:var(--accent);}
+.divider{width:1px;height:22px;background:rgba(255,255,255,0.12);}
+
+.pill-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:20px;
+  background:rgba(255,255,255,0.05);border:1px solid var(--panel-border);
+  color:#fff;font-size:0.78rem;font-weight:600;cursor:pointer;
+  transition:all .25s ease;white-space:nowrap;
+}
+.pill-btn:hover{background:rgba(255,207,107,0.15);border-color:rgba(255,207,107,0.4);transform:translateY(-2px);}
+.pill-btn.active{background:rgba(255,207,107,0.25);border-color:var(--accent);color:var(--accent);}
+
+/* ---------- Labels (3D projected) ---------- */
+#labelLayer{position:fixed;inset:0;z-index:10;pointer-events:none;}
+.body-label{
+  position:absolute;transform:translate(-50%,-140%);
+  font-size:0.68rem;font-weight:600;letter-spacing:0.5px;
+  color:#fff;text-shadow:0 0 6px rgba(0,0,0,0.9), 0 0 3px rgba(0,0,0,0.9);
+  white-space:nowrap;pointer-events:none;
+  transition:opacity .2s ease;
+}
+
+/* ---------- Sidebar toggle for mobile ---------- */
+#sidebarToggle{display:none;}
+
+/* ---------- Responsive ---------- */
+@media (max-width:880px){
+  #infoPanel{width:260px;}
+}
+
+@media (max-width:680px){
+  #sidebar{
+    top:auto;bottom:150px;left:10px;right:10px;width:auto;
+    max-height:38vh;
+    flex-direction:row;flex-wrap:wrap;
+  }
+  .body-item{flex:1 1 auto;min-width:86px;}
+  .body-item small{display:none;}
+  #sidebar.collapsed{transform:translateY(400px);}
+  #infoPanel{
+    left:10px;right:10px;top:auto;bottom:150px;width:auto;max-width:none;
+    max-height:40vh;
+    transform:translateY(400px);
+  }
+  #infoPanel.visible{transform:translateY(0);}
+  #appTitle{font-size:0.82rem;}
+  #controlsRow{gap:8px;padding:8px 10px;}
+  .pill-btn{padding:7px 12px;font-size:0.7rem;}
+  .ctrl-group label{display:none;}
+  #speedSlider{width:70px;}
+}
+
+@media (max-width:420px){
+  .pill-btn span.label-text{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div class="sun-spinner"></div>
+  <p>Igniting the sun…</p>
+</div>
+
+<div id="appRoot"></div>
+<div id="labelLayer"></div>
+
+<div id="topBar">
+  <div id="appTitle">☀ Solar System Explorer</div>
+  <div class="spacer"></div>
+  <button class="icon-btn" id="sidebarToggleBtn" title="Toggle planet list">☰</button>
+  <button class="icon-btn" id="orbitsToggleBtn" title="Toggle orbit paths">🛰</button>
+  <button class="icon-btn" id="labelsToggleBtn" title="Toggle labels">🏷</button>
+</div>
+
+<div id="sidebar"></div>
+
+<div id="infoPanel">
+  <span class="close-x" id="infoCloseBtn">✕</span>
+  <div id="infoContent"></div>
+</div>
+
+<div id="bottomBar">
+  <div id="tourCaption"></div>
+  <div id="controlsRow">
+    <button class="pill-btn" id="playPauseBtn">⏸ <span class="label-text">Pause</span></button>
+    <div class="divider"></div>
+    <div class="ctrl-group">
+      <label>Speed</label>
+      <input type="range" id="speedSlider" min="0" max="40" step="0.1" value="1" />
+    </div>
+    <div class="divider"></div>
+    <button class="pill-btn" id="tourBtn">🚀 <span class="label-text">Start Tour</span></button>
+    <button class="pill-btn" id="resetBtn">🎯 <span class="label-text">Reset View</span></button>
+  </div>
+</div>
+
+<script src="./three.min.js"></script>
+<script src="./solar-data.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>

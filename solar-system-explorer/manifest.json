@@ -1,0 +1,16 @@
+{
+  "name": "3D Solar System Explorer",
+  "short_name": "Solar System",
+  "description": "An interactive 3D virtual tour of the solar system — planets, moons, orbits, gravity, and real facts.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#000005",
+  "theme_color": "#000005",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
