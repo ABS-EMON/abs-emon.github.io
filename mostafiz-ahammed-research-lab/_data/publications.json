@@ -1,0 +1,62 @@
+[
+	{
+		"id": "healthcare-analytics-2022-skin-disease",
+		"type": "article-journal",
+		"title": "A machine learning approach for skin disease detection and classification using image segmentation",
+		"container-title": "Healthcare Analytics",
+		"volume": "2",
+		"page": "100122",
+		"ISSN": "2772-4425",
+		"source": "ScienceDirect",
+		"DOI": "10.1016/j.health.2022.100122",
+		"author": [
+			{ "family": "Ahammed", "given": "Mostafiz" },
+			{ "family": "Mamun", "given": "Md. Al" },
+			{ "family": "Uddin", "given": "Mohammad Shorif" }
+		],
+		"issued": {
+			"date-parts": [["2022"]]
+		}
+	},
+	{
+		"id": "jfmg-2024-value-relevance",
+		"type": "article-journal",
+		"title": "Value Relevance of Key Accounting Information in Predicting Market Performance: A Machine Learning Approach",
+		"container-title": "Journal of Financial Markets and Governance",
+		"volume": "3",
+		"issue": "1",
+		"page": "15-35",
+		"source": "JFMG",
+		"DOI": "10.54728/JFMG.202310.00072",
+		"author": [
+			{ "family": "Mahmud", "given": "Imran" },
+			{ "family": "Akter", "given": "Faima" },
+			{ "family": "Ahammed", "given": "Mostafiz" }
+		],
+		"issued": {
+			"date-parts": [["2024", 9, 20]]
+		}
+	},
+	{
+		"id": "aii-2023-speech-emotion-recognition",
+		"type": "paper-conference",
+		"title": "Speech Emotion Recognition: An Empirical Analysis of Machine Learning Algorithms Across Diverse Data Sets",
+		"container-title": "Applied Intelligence and Informatics (AII 2023), Communications in Computer and Information Science",
+		"volume": "2065",
+		"publisher": "Springer, Cham",
+		"source": "Springer",
+		"DOI": "10.1007/978-3-031-68639-9_3",
+		"author": [
+			{ "family": "Ahammed", "given": "Mostafiz" },
+			{ "family": "Sheikh", "given": "Rubel" },
+			{ "family": "Hossain", "given": "Farah" },
+			{ "family": "Liza", "given": "Shahrima Mustak" },
+			{ "family": "Rahman", "given": "Muhammad Arifur" },
+			{ "family": "Mahmud", "given": "Mufti" },
+			{ "family": "Brown", "given": "David J." }
+		],
+		"issued": {
+			"date-parts": [["2023"]]
+		}
+	}
+]

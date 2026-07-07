@@ -1,0 +1,33 @@
+- date: 01/09/25
+  title: "New role at University of Frontier Technology"
+  tags:
+    - appointment
+  content: Mostafiz Ahammed has joined the Department of Internet of Things
+    and Robotics Engineering (IRE) at the University of Frontier Technology,
+    Bangladesh, as Lecturer.
+
+- date: 20/09/24
+  title: "New publication in Journal of Financial Markets and Governance"
+  tags:
+    - publication
+  content: Our paper "Value Relevance of Key Accounting Information in
+    Predicting Market Performance - A Machine Learning Approach" has been
+    published in the Journal of Financial Markets and Governance, Vol. 3(1).
+
+- date: 01/01/23
+  title: "Conference paper accepted at AII 2023"
+  tags:
+    - publication
+    - conference
+  content: Our work on speech emotion recognition, "Speech Emotion
+    Recognition - An Empirical Analysis of Machine Learning Algorithms
+    Across Diverse Data Sets," was accepted and published in Applied
+    Intelligence and Informatics (Springer CCIS, vol 2065).
+
+- date: 01/03/22
+  title: "Skin disease detection paper published in Healthcare Analytics"
+  tags:
+    - publication
+  content: Our machine learning approach for skin disease detection and
+    classification using image segmentation was published in Healthcare
+    Analytics, Volume 2 (2022).

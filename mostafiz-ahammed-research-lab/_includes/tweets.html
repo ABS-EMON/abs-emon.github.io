@@ -1,0 +1,11 @@
+<h3>Latest News</h3>
+<ul class="list-unstyled">
+{% assign newsitems = site.data.news | sort: 'date' | reverse %}
+{% for item in newsitems limit: 4 %}
+    <li style="margin-bottom: 1em;">
+        <strong>{{ item.date }}</strong> — {{ item.title }}
+    </li>
+{% endfor %}
+</ul>
+<a href="{{ site.url }}{{ site.baseurl }}/news">See all news &raquo;</a>
+

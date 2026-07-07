@@ -1,0 +1,56 @@
+<div id="footer" class="panel">
+  <div class="panel-footer">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-4">
+				<p>{{ site.title }}</p>
+				<img class="img-fluid" src="{{ site.baseurl }}/images/logo/lab-logo.png"
+				     style="max-width: 100px;">
+			</div>
+
+			<div class="col-sm-4">
+				<p>Links</p>
+				<ul class="list-unstyled">
+					<li><a href="https://github.com/Mostafiz24" target="_blank">GitHub</a></li>
+					<li><a href="https://scholar.google.com/citations?user=T_ehJtgAAAAJ&hl=en" target="_blank">Google Scholar</a></li>
+					<li><a href="https://bd.linkedin.com/in/mostafiz-ahammed-7b4266106" target="_blank">LinkedIn</a></li>
+					<li><a href="https://ire.uftb.ac.bd/profile/Mostafiz" target="_blank">University Profile</a></li>
+				</ul>
+			</div>
+
+			<div class="col-sm-4">
+				<p>Contact</p>
+				<p>
+					Chandpur Science and Technology University<br>
+					Chandpur-3600, Bangladesh<br>
+					mostafizs154@gmail.com<br>
+					+880 1884 307860
+				</p>
+			</div>
+		</div>
+
+		<div class="row mt-3">
+			<p class="text-center">Copyright, 2026 — {{ site.title }}</p>
+		</div>
+	</div>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="{{ site.url }}{{ site.baseurl }}/js/bootstrap.min.js"></script>
+
+<!-- PWA: register service worker -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker
+        .register('{{ site.baseurl }}/sw.js')
+        .then(function (reg) {
+          console.log('Service worker registered with scope:', reg.scope);
+        })
+        .catch(function (err) {
+          console.warn('Service worker registration failed:', err);
+        });
+    });
+  }
+</script>
