@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abu Bakkar Siddique Emon</title>
+<meta name="description" content="Abu Bakkar Siddique Emon — IoT & Robotics Engineering student, UAV and AI/ML developer.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="site-head">
+  <p class="site-name"><a href="index.html">Abu Bakkar Siddique Emon</a></p>
+</div>
+
+<nav class="main-nav">
+  <button class="menu-btn" id="menuBtn">Menu</button>
+  <ul id="navList">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="experience.html">Experience</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="publications.html">Publications</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <section id="top">
+    <h2 class="section-title">About</h2>
+    <div class="about-row">
+      <div class="about-text">
+        <p>I am an undergraduate student in <strong>IoT and Robotics Engineering</strong> at the University of Frontier Technology, Bangladesh. I am focused on applying my knowledge in Artificial Intelligence, Machine Learning, Deep Learning, IoT, Robotics, Aerospace, Embedded Systems, and Autonomous UAV development to real-world applications and research.</p>
+        <p>I work across Python, n8n AI agentic automation, MQTT, C, C++, Java, Unity, ROS2, Gazebo, RViz2, and PX4 for simulation and autonomous control, and build with Arduino, ESP32, Raspberry Pi, and Pixhawk hardware. I am also proficient in full-stack development with Laravel and Flutter.</p>
+        <p>My recent work includes an LLM-controlled PX4 drone in ROS2 Jazzy, an AI-edge autonomous Mars rover prototype, and a multi-service disaster-response drone with wireless internet service — built as part of my ongoing exploration of UAVs, aerospace, automation, and AR/VR applications.</p>
+        <p>Two of my papers, on IoT-based health monitoring and low-cost RC aircraft telemetry, have been submitted to and published at IEEE conferences (ICEFronT 2026, ICCIT 2025).</p>
+        <p>My curriculum vitae can be found <a href="CV.pdf" target="_blank" onclick="return true;">here</a>.</p>
+        <p class="contact-line"><a href="mailto:abubakkar0001@std.uftb.ac.bd">abubakkar0001@std.uftb.ac.bd</a></p>
+      </div>
+      <div class="about-photo">
+        <div class="frame"><img src="emons.png" alt="Abu Bakkar Siddique Emon"></div>
+      </div>
+    </div>
+
+    <div class="gallery-wrap">
+      <div class="gallery" id="gallery">
+        <div class="slide">
+          <img src="project-px4-drone.png" alt="PX4 LLM Drone Control">
+          <div class="caption">PX4 LLM Drone Control<small>ROS2 Jazzy · Gazebo</small></div>
+        </div>
+        <div class="slide">
+          <img src="project-mars-rover.png" alt="AI-Edge Mars Rover">
+          <div class="caption">AI-Edge Mars Rover<small>CNN + VLM onboard</small></div>
+        </div>
+        <div class="slide">
+          <img src="project-emma-robot.png" alt="Emma Voice Assistant Robot">
+          <div class="caption">Emma — Voice Assistant Robot<small>NLP · pyttsx3</small></div>
+        </div>
+        <div class="slide">
+          <img src="project-disaster-drone.png" alt="Disaster-Response Drone">
+          <div class="caption">Disaster-Response Drone<small>Wireless Power Transfer</small></div>
+        </div>
+        <div class="slide">
+          <img src="project-su27-jet.png" alt="SU-27 RC Jet">
+          <div class="caption">SU-27 RC Jet<small>Pixhawk · Mission Planner</small></div>
+        </div>
+
+<div class="slide">
+          <img src="project-emon-drone.png" alt="Drone">
+          <div class="caption">Drone<small>Pixhawk · Mission Planner</small></div>
+        </div>
+
+        <div class="slide">
+          <img src="project-quadcopter.png" alt="GPS Quadcopter">
+          <div class="caption">GPS Quadcopter<small>Custom flight controller</small></div>
+        </div>
+      </div>
+      <button class="gallery-btn prev" onclick="scrollGallery(-1)" aria-label="Previous">&#8249;</button>
+      <button class="gallery-btn next" onclick="scrollGallery(1)" aria-label="Next">&#8250;</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  &copy; <span id="year"></span> Abu Bakkar Siddique Emon</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
